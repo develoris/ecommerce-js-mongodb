@@ -31,7 +31,8 @@ export const getById = async (req, res, next) => {
 
 export const create = async (req, res, next) => {
     const data = {
-        ...req.body
+        ...req.body,
+        price: parseFloat(req.body.price)
     }
     try {
         const newProduct = await service.create(data);
@@ -42,10 +43,12 @@ export const create = async (req, res, next) => {
     }
 }
 
+
 export const update = async (req, res, next) => {
     const id = req.params.id;
     const data = {
-        ...req.body
+        ...req.body,
+        price: parseFloat(req.body.price)
     };
     try {
         await service.updateById(data, id)

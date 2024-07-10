@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
-import { getCollection } from '../DataBase/DbConnection.js';  
+import { getCollection, clientDb } from '../DataBase/DbConnection.js';  
 
-const collection = getCollection('Prodotti');
+//const getCollection('Prodotti') = getCollection('Prodotti');
 
 /**
  * Return Array Of Products
@@ -9,7 +9,7 @@ const collection = getCollection('Prodotti');
  */
 export const getProduct = async () => {
     try {    
-        const products = await collection.find({}).toArray();
+        const products = await getCollection('Prodotti').find({}).toArray();
         return products;
     } catch (error) {
        throw error
@@ -24,7 +24,8 @@ export const getProduct = async () => {
 export const getProductById = async (id) => {
     try {
         const _id = new ObjectId(id);
-        const product = await collection.findOne({ _id });
+        // const product = await getCollection('Prodotti').findOne({ _id });
+        const product = await clientDb.collection('Prodotti').findOne({ _id });
         return product;
     } catch (error) {
         throw error;
@@ -38,12 +39,14 @@ export const getProductById = async (id) => {
  */
 export const create = async (dataObj) => {
 try {
-    const newProduct = await collection.insertOne(dataObj);
+    const newProduct = await getCollection('Prodotti').insertOne(dataObj);
     return newProduct;
 } catch (error) {
     throw error;
 }
 };
+
+
 /**
  * 
  * @param {dataObj} dataObj 
@@ -53,7 +56,7 @@ try {
 export const updateById = async (dataObj, id) => {
     try {
         const _id = new ObjectId(id);
-        const updatedProduct = await collection.updateOne({ _id }, { $set: dataObj });
+        const updatedProduct = await getCollection('Prodotti').updateOne({ _id }, { $set: dataObj });
         return updatedProduct;
     } catch (error) {
         throw error;
@@ -68,7 +71,7 @@ export const updateById = async (dataObj, id) => {
 export const deleteOne = async (id) => {
     try {
         const _id = new ObjectId(id);
-        const deleteResult = await collection.deleteOne({ _id });
+        const deleteResult = await getCollection('Prodotti').deleteOne({ _id });
         return deleteResult;
     } catch (error) {
         throw error;

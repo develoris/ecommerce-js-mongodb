@@ -3,8 +3,8 @@ import * as controller from './cart.controller.js';
 
 const carrelloRouter = Router();
 
-carrelloRouter.post('/create', controller.createCart);
-carrelloRouter.put('/:id/add', controller.addProductToCart);
-carrelloRouter.get('/:id/details', controller.getCartWithDetails); // Aggiungi questa rotta
+carrelloRouter.post('/', controller.createCart);
+carrelloRouter.put('/:idCart/addProduct/:idProduct', controller.addProductToCart);
+carrelloRouter.get('/:id', controller.getCartWithDetails); // Aggiungi questa rotta
 
 export default carrelloRouter;

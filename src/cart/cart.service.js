@@ -1,9 +1,9 @@
 import { ObjectId } from 'mongodb';
-import { getCollection } from '../DataBase/DbConnection.js';
+import { getCollection, client, clientDb } from '../DataBase/DbConnection.js';
 import { getProductById } from '../Prodotti/Product.service.js';
 
-const carrelloCollection = getCollection('Carrello');
-const prodottiCollection = getCollection('Prodotti');
+const cartCollection = getCollection('Carrello');
+const productCollection = getCollection('Prodotti');
 
 /**
  * Create a new empty cart
@@ -18,7 +18,7 @@ export const createCart = async () => {
         products: []
     };
     try {
-        const newCart = await carrelloCollection.insertOne(cart);
+        const newCart = await getCollection('Carrello').insertOne(cart);
         return newCart;
     } catch (error) {
         throw error;
@@ -29,42 +29,78 @@ export const createCart = async () => {
  * Update cart by adding a product ID
  * @param {string} cartId - The ID of the cart to update
  * @param {string} productId - The ID of the product to add
+ * @param {Object} options - Transaction options
  * @returns {Promise<any>} The result of the update operation
  */
 export const addProductToCart = async (cartId, productId) => {
+    const session = client.startSession();
+    const transactionOptions = {
+        readPreference: 'primary',
+        readConcern: { level: 'local' },
+        writeConcern: { w: 'majority' }
+    };
+
     try {
-        const cartObjectId = new ObjectId(cartId);
-        const productObjectId = new ObjectId(productId);
-        
-        // Get the product details
-        const product = await getProductById(productObjectId);
-        if (!product) {
-            throw new Error('Prodotto non trovato');
-        }
-
-        if (product.qty_stock <= 0) {
-            throw new Error('Prodotto non disponibile in stock');
-        }
-        // Find the cart
-        const cart = await carrelloCollection.findOne({ _id: cartObjectId });
-
-        if (!cart) {
-            throw new Error('Carrello non trovato');
-        }
-
-        // Update the cart
-        const updatedCart = await carrelloCollection.updateOne(
-            { _id: cartObjectId },
-            {
-                $push: { products: productObjectId },
-                $inc: { qty: 1, totPrice: product.price }
+            // const productColl = session.
+        await session.withTransaction(async (session) => {
+            const cartObjectId = new ObjectId(cartId);
+            const productObjectId = new ObjectId(productId);
+            // const product = await getProductById(productObjectId, { session });
+            const product = await client.db('E-commerce').collection('Prodotti').findOne({ _id: productObjectId }, {session})
+            if (!product) {
+                throw new Error('Prodotto non trovato');
             }
-        );
 
-        return updatedCart;
+            if (product.qty_stock <= 0) {
+                throw new Error('Prodotto non disponibile in stock');
+            }
+
+            const updatedCart =  await clientDb.collection('Carrello').updateOne(
+                { _id: cartObjectId },
+                {
+                    $push: { products: productObjectId },
+                    $inc: { qty: 1, totPrice: product.price }
+                },
+                { session }
+            );
+
+            // Decrease the product stock quantity
+            await getCollection('Prodotti').updateOne(
+                { _id: productObjectId },
+                { $inc: { qty_stock: -1 } },
+                { session }
+            );
+
+            return updatedCart;
+        }, transactionOptions);
     } catch (error) {
         throw error;
+    } finally {
+        await session.endSession();
+        // await client.close();
     }
+
+    // let txnRes = await client.withSession(async (session) =>
+    //    await session.withTransaction(async (session) => {
+    //     const productObjectId = new ObjectId(productId);
+    //     const product = await getProductById(productObjectId, { session });
+    //     console.log(product);
+    //     //   const savingsColl = client.db("bank").collection("savings_accounts");
+    //     //   await savingsColl.findOneAndUpdate(
+    //     //     {account_id: "9876"}, 
+    //     //     {$inc: {amount: -100 }}, 
+    //     //     { session });
+      
+    //     //   const checkingColl = client.db("bank").collection("checking_accounts");
+    //     //   await checkingColl.findOneAndUpdate(
+    //     //     {account_id: "9876"}, 
+    //     //     {$inc: {amount: 100 }}, 
+    //     //     { session });
+    //     //   // ... perform other operations
+    //     //   return "Transaction committed.";
+    //     }, null)
+    //   );
+    //   console.log(txnRes);
 };
 
 /**
@@ -75,7 +111,7 @@ export const addProductToCart = async (cartId, productId) => {
 export const getCartById = async (id) => {
     try {
         const _id = new ObjectId(id);
-        const cart = await carrelloCollection.findOne({ _id });
+        const cart = await getCollection('Carrello').findOne({ _id });
         return cart;
     } catch (error) {
         throw error;
@@ -90,19 +126,19 @@ export const getCartById = async (id) => {
 export const getCartByIdWithDetails = async (id) => {
     try {
         const _id = new ObjectId(id);
-        const cart = await carrelloCollection.aggregate([
+        const cart = await getCollection('Carrello').aggregate([
             { $match: { _id } },
             {
                 $lookup: {
-                    from: 'Prodotti', // The collection to join with
-                    localField: 'products', // Field from the input documents
-                    foreignField: '_id', // Field from the documents of the "from" collection
-                    as: 'productDetails' // Output array field
+                    from: 'Prodotti',
+                    localField: 'products',
+                    foreignField: '_id',
+                    as: 'productDetails'
                 }
             }
         ]).toArray();
 
-        return cart[0]; // Assuming you want the first (and only) document in the array
+        return cart[0];
     } catch (error) {
         throw error;
     }

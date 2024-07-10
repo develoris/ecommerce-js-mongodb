@@ -10,7 +10,7 @@ export const createCart = async (req, res, next) => {
     try {
         const newCart = await service.createCart();
         const getCart = await service.getCartById(newCart.insertedId);
-        return res.send({ message: 'Carrello creato', cart: getCart });
+        return res.send(getCart);
     } catch (error) {
         next(error);
     }
@@ -23,16 +23,16 @@ export const createCart = async (req, res, next) => {
  * @returns 
  */
 export const addProductToCart = async (req, res, next) => {
-    const cartId = req.params.id;
-    const productId = req.body.productId;
+    const cartId = req.params.idCart;
+    const productId = req.params.idProduct;
 
-    try {
+      try {
         await service.addProductToCart(cartId, productId);
         const getCart = await service.getCartByIdWithDetails(cartId);
         return res.send({ message: 'Prodotto aggiunto al carrello', cart: getCart });
     } catch (error) {
         next(error);
-    }
+}
 }
 
 /**
