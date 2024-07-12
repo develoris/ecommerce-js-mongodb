@@ -2,7 +2,8 @@ import { Db, MongoClient } from 'mongodb';
 
 //const url = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}.enuharq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0&authMechanism=DEFAULT`;
 const url = `mongodb://localhost:27017`;
-export const client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
+export const client = new MongoClient(url//, { useNewUrlParser: true, useUnifiedTopology: true }
+);
 //const dbName = `e-commerce_Ivan`;
 const dbName = `E-commerce`;
 /**

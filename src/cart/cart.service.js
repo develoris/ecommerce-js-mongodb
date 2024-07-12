@@ -9,8 +9,9 @@ const productCollection = getCollection('Prodotti');
  * Create a new empty cart
  * @returns {Promise<any>} The result of the insert operation
  */
-export const createCart = async () => {
+export const createCart = async (id) => {
     const cart = {
+        idUtente: id,
         status: 'active',
         dataCreation: new Date(),
         qty: 0,
@@ -33,20 +34,22 @@ export const createCart = async () => {
  * @returns {Promise<any>} The result of the update operation
  */
 export const addProductToCart = async (cartId, productId) => {
-    const session = client.startSession();
-    const transactionOptions = {
-        readPreference: 'primary',
-        readConcern: { level: 'local' },
-        writeConcern: { w: 'majority' }
-    };
+    // const session = client.startSession();
+    // const transactionOptions = {
+    //     readPreference: 'primary',
+    //     readConcern: { level: 'local' },
+    //     writeConcern: { w: 'majority' }
+    // };
 
     try {
             // const productColl = session.
-        await session.withTransaction(async (session) => {
+        // await session.withTransaction(async (session) => {
             const cartObjectId = new ObjectId(cartId);
             const productObjectId = new ObjectId(productId);
             // const product = await getProductById(productObjectId, { session });
-            const product = await client.db('E-commerce').collection('Prodotti').findOne({ _id: productObjectId }, {session})
+            const product = await client.db('E-commerce').collection('Prodotti').findOne({ _id: productObjectId }, 
+                // {session}
+            );
             if (!product) {
                 throw new Error('Prodotto non trovato');
             }
@@ -61,46 +64,24 @@ export const addProductToCart = async (cartId, productId) => {
                     $push: { products: productObjectId },
                     $inc: { qty: 1, totPrice: product.price }
                 },
-                { session }
+                // { session }
             );
 
             // Decrease the product stock quantity
             await getCollection('Prodotti').updateOne(
                 { _id: productObjectId },
                 { $inc: { qty_stock: -1 } },
-                { session }
+                //{ session }
             );
 
             return updatedCart;
-        }, transactionOptions);
+        // }, transactionOptions);
     } catch (error) {
         throw error;
-    } finally {
-        await session.endSession();
-        // await client.close();
+    // } finally {
+    //     await session.endSession();
+    //     // await client.close();
     }
-
-    // let txnRes = await client.withSession(async (session) =>
-    //    await session.withTransaction(async (session) => {
-    //     const productObjectId = new ObjectId(productId);
-    //     const product = await getProductById(productObjectId, { session });
-    //     console.log(product);
-    //     //   const savingsColl = client.db("bank").collection("savings_accounts");
-    //     //   await savingsColl.findOneAndUpdate(
-    //     //     {account_id: "9876"}, 
-    //     //     {$inc: {amount: -100 }}, 
-    //     //     { session });
-      
-    //     //   const checkingColl = client.db("bank").collection("checking_accounts");
-    //     //   await checkingColl.findOneAndUpdate(
-    //     //     {account_id: "9876"}, 
-    //     //     {$inc: {amount: 100 }}, 
-    //     //     { session });
-    //     //   // ... perform other operations
-    //     //   return "Transaction committed.";
-    //     }, null)
-    //   );
-    //   console.log(txnRes);
 };
 
 /**
@@ -143,3 +124,13 @@ export const getCartByIdWithDetails = async (id) => {
         throw error;
     }
 };
+
+
+export const getAll = async() => {
+    try {
+        const cart = await getCollection('Carrello').find({}).toArray()
+        return cart;
+    } catch (error) {
+        throw error;
+    }
+}

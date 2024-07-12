@@ -1,4 +1,6 @@
+import { ObjectId } from 'mongodb';
 import * as service from './cart.service.js';
+import jwt from 'jsonwebtoken';
 
 /**
  * @param {import('express').Request} req 
@@ -7,8 +9,14 @@ import * as service from './cart.service.js';
  * @returns 
  */
 export const createCart = async (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader.split(' ')[1];
     try {
-        const newCart = await service.createCart();
+        const decoded = jwt.verify(token, process.env.SECRET_KEY);
+        const idUser = "" + decoded.userId; 
+        const userId = new ObjectId(idUser);
+
+        const newCart = await service.createCart(userId);
         const getCart = await service.getCartById(newCart.insertedId);
         return res.send(getCart);
     } catch (error) {
@@ -49,6 +57,21 @@ export const getCartWithDetails = async (req, res, next) => {
         if (!cart) {
             return res.status(404).json({ message: 'Carrello non trovato' });
         }
+        return res.json(cart);
+    } catch (error) {
+        next(error);
+    }
+}
+
+/**
+ * @param {import('express').Request} req 
+ * @param {import('express').Response} res 
+ * @param {*} next 
+ * @returns 
+ */
+export const getAll = async (req, res, next) => {
+    try {
+        const cart = await service.getAll();
         return res.json(cart);
     } catch (error) {
         next(error);
