@@ -53,7 +53,7 @@ export const getCartWithDetails = async (req, res, next) => {
     const id = req.params.id;
 
     try {
-        const cart = await service.getCartByIdWithDetails(id);
+        const cart = await service.getMe(id);
         if (!cart) {
             return res.status(404).json({ message: 'Carrello non trovato' });
         }
@@ -78,17 +78,39 @@ export const getAll = async (req, res, next) => {
     }
 }
 
+// export const getMe = async (req, res, next) => {
+//     const authHeader = req.headers['authorization'];
+//     const token = authHeader.split(' ')[1];
+//     try {
+//         const decoded = jwt.verify(token, process.env.SECRET_KEY);
+//         const idUser = "" + decoded.userId; 
+//         const userId = new ObjectId(idUser);
+
+//         const getMe = await service.getCartById(userId)
+//         return getMe;
+//     } catch (error) {
+//         next(error);
+//     }
+// }
+
+/**
+ * @param {import('express').Request} req 
+ * @param {import('express').Response} res 
+ * @param {*} next 
+ * @returns 
+ */
 export const getMe = async (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader.split(' ')[1];
 
     try {
         const decoded = jwt.verify(token, process.env.SECRET_KEY);
-        const idUser = "" + decoded.userId; 
-        const userId = new ObjectId(idUser);
-
-        const getMe = await service.getCartById(userId)
-        return getMe;
+        const idUser = decoded.userId;
+        const cart = await service.getMe(idUser);
+        if (!cart) {
+            return res.status(404).json({ message: 'Carrello non trovato' });
+        }
+        return res.json(cart);
     } catch (error) {
         next(error);
     }

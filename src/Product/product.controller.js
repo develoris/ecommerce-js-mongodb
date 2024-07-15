@@ -14,7 +14,12 @@ export const getAll = async (req, res, next) => {
         next(error);
     }
 }
-
+/**
+ * @param {import('express').Request} req 
+ * @param {import('express').Response} res 
+ * @param {*} next 
+ * @returns 
+ */
 export const getById = async (req, res, next) => {
     const id = req.params.id;
 
@@ -28,7 +33,12 @@ export const getById = async (req, res, next) => {
         next(error);
     }
 };
-
+/**
+ * @param {import('express').Request} req 
+ * @param {import('express').Response} res 
+ * @param {*} next 
+ * @returns 
+ */
 export const create = async (req, res, next) => {
     const data = {
         ...req.body,
@@ -43,7 +53,12 @@ export const create = async (req, res, next) => {
     }
 }
 
-
+/**
+ * @param {import('express').Request} req 
+ * @param {import('express').Response} res 
+ * @param {*} next 
+ * @returns 
+ */
 export const update = async (req, res, next) => {
     const id = req.params.id;
     const data = {
@@ -58,7 +73,12 @@ export const update = async (req, res, next) => {
         next(error);
     }
 }
-
+/**
+ * @param {import('express').Request} req 
+ * @param {import('express').Response} res 
+ * @param {*} next 
+ * @returns 
+ */
 export const deleteOne = async (req, res, next) => {
     const id = req.params.id;
     try {

@@ -90,19 +90,24 @@ export const login = async (email, password) => {
 
         const tokenPayload = { userId: user._id, email: user.email, fullName: `${user.name} ${user.surname}` };
         const expInSecTok = +process.env.TOKEN_TIME_SECOND;
-
+        const expInSecRefTok = +process.env.REFRESH_TOKEN_TIME_SECOND;
 
         const tokenExist = await getCollection('Token').findOne({  userId: user._id });
         if (tokenExist) {
             await getCollection('Token').deleteOne({  userId: user._id });
         } 
+
         const token = jwt.sign(tokenPayload, process.env.SECRET_KEY, {
             expiresIn: expInSecTok
         })
+        const refreshToken = jwt.sign({ userId: user.id, email: user.email, fullName: `${user.name} ${user.surname}` }, process.env.SECRET_KEY, { 
+            expiresIn: expInSecRefTok
+        });
 
         await getCollection('Token').insertOne({
             userId: user._id,
             token,
+            refreshToken,
             expInSecTok
         })
 

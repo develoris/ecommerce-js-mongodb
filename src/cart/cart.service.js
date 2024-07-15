@@ -47,7 +47,7 @@ export const addProductToCart = async (cartId, productId) => {
             const cartObjectId = new ObjectId(cartId);
             const productObjectId = new ObjectId(productId);
             // const product = await getProductById(productObjectId, { session });
-            const product = await client.db('E-commerce').collection('Prodotti').findOne({ _id: productObjectId }, 
+            const product = await getCollection('Product').findOne({ _id: productObjectId }, 
                 // {session}
             );
             if (!product) {
@@ -91,7 +91,7 @@ export const addProductToCart = async (cartId, productId) => {
  */
 export const getCartById = async (id) => {
     try {
-        const _id = new ObjectId(id);
+        //const _id = new ObjectId(id);
         const cart = await getCollection('Cart').findOne({ _id });
         return cart;
     } catch (error) {
@@ -111,7 +111,7 @@ export const getCartByIdWithDetails = async (id) => {
             { $match: { _id } },
             {
                 $lookup: {
-                    from: 'Prodotti',
+                    from: 'Product',
                     localField: 'products',
                     foreignField: '_id',
                     as: 'productDetails'
@@ -135,3 +135,29 @@ export const getAll = async() => {
     }
 }
 
+/**
+ * Get a cart by ID with product details
+ * @param {string} id - The ID of the cart
+ * @returns {Promise<any>} The cart with product details
+ */
+export const getMe = async (id) => {
+    try {
+        const idUtente = new ObjectId(id);
+        const users = await getCollection('Cart').findOne({idUtente});
+        const cart = await getCollection('Cart').aggregate([
+            { $match: { idUtente } },
+            {
+                $lookup: {
+                    from: 'Product',
+                    localField: 'products',
+                    foreignField: '_id',
+                    as: 'productDetails'
+                }
+            }
+        ]).toArray();
+
+        return cart[0];
+    } catch (error) {
+        throw error;
+    }
+};

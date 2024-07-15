@@ -13,8 +13,6 @@ const verifyToken = async (req, res, next) => {
     try {
 
         const decoded = jwt.verify(token, process.env.SECRET_KEY);
-        const usersCollection = getCollection('User');
-        const tokenCollection = getCollection('Token');
         const userId = new ObjectId("" + decoded.userId);
         const tokenDoc = await getCollection('Token').findOne({ userId });
         const user = await getCollection('User').findOne({ _id: userId });
@@ -28,12 +26,6 @@ const verifyToken = async (req, res, next) => {
         }
         req.user = decoded;
         next();
-        // if (tokenDoc.token === token) {
-        //     req.user = decoded;
-        //     next();
-        // } else {
-        //     res.status(401).send('I token non combaciano');
-        // }
 
     } catch (error) {
         res.status(401).json({ error: error.message });
