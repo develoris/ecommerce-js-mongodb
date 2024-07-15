@@ -1,8 +1,8 @@
 import express from 'express';
 import errorHandler from './middleware/errorHandler.js';
-import productRouter from './Prodotti/Product.root.js';
+import productRouter from './Product/Product.routes.js';
 import { connectDB } from './DataBase/DbConnection.js';
-import carrelloRouter from './cart/cart.root.js';
+import carrelloRouter from './cart/cart.routes.js';
 import userRouter from './User/user.routes.js';
 
 const server = express();

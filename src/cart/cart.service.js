@@ -1,9 +1,9 @@
 import { ObjectId } from 'mongodb';
 import { getCollection, client, clientDb } from '../DataBase/DbConnection.js';
-import { getProductById } from '../Prodotti/Product.service.js';
+import { getProductById } from '../Product/Product.service.js';
 
-const cartCollection = getCollection('Carrello');
-const productCollection = getCollection('Prodotti');
+const cartCollection = getCollection('Cart');
+const productCollection = getCollection('Product');
 
 /**
  * Create a new empty cart
@@ -19,7 +19,7 @@ export const createCart = async (id) => {
         products: []
     };
     try {
-        const newCart = await getCollection('Carrello').insertOne(cart);
+        const newCart = await getCollection('Cart').insertOne(cart);
         return newCart;
     } catch (error) {
         throw error;
@@ -58,7 +58,7 @@ export const addProductToCart = async (cartId, productId) => {
                 throw new Error('Prodotto non disponibile in stock');
             }
 
-            const updatedCart =  await clientDb.collection('Carrello').updateOne(
+            const updatedCart =  await getCollection('Cart').updateOne(
                 { _id: cartObjectId },
                 {
                     $push: { products: productObjectId },
@@ -68,7 +68,7 @@ export const addProductToCart = async (cartId, productId) => {
             );
 
             // Decrease the product stock quantity
-            await getCollection('Prodotti').updateOne(
+            await getCollection('Product').updateOne(
                 { _id: productObjectId },
                 { $inc: { qty_stock: -1 } },
                 //{ session }
@@ -92,7 +92,7 @@ export const addProductToCart = async (cartId, productId) => {
 export const getCartById = async (id) => {
     try {
         const _id = new ObjectId(id);
-        const cart = await getCollection('Carrello').findOne({ _id });
+        const cart = await getCollection('Cart').findOne({ _id });
         return cart;
     } catch (error) {
         throw error;
@@ -107,7 +107,7 @@ export const getCartById = async (id) => {
 export const getCartByIdWithDetails = async (id) => {
     try {
         const _id = new ObjectId(id);
-        const cart = await getCollection('Carrello').aggregate([
+        const cart = await getCollection('Cart').aggregate([
             { $match: { _id } },
             {
                 $lookup: {
@@ -128,9 +128,10 @@ export const getCartByIdWithDetails = async (id) => {
 
 export const getAll = async() => {
     try {
-        const cart = await getCollection('Carrello').find({}).toArray()
+        const cart = await getCollection('Cart').find({}).toArray()
         return cart;
     } catch (error) {
         throw error;
     }
 }
+

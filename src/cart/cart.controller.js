@@ -77,3 +77,19 @@ export const getAll = async (req, res, next) => {
         next(error);
     }
 }
+
+export const getMe = async (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader.split(' ')[1];
+
+    try {
+        const decoded = jwt.verify(token, process.env.SECRET_KEY);
+        const idUser = "" + decoded.userId; 
+        const userId = new ObjectId(idUser);
+
+        const getMe = await service.getCartById(userId)
+        return getMe;
+    } catch (error) {
+        next(error);
+    }
+}

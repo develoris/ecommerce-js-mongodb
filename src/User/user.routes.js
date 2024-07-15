@@ -6,9 +6,9 @@ const userRouter = Router();
 
 userRouter.get('/',controller.getAll);
 userRouter.post('/',controller.create);
-userRouter.put('/:id',verifyToken, controller.updateUser);
-userRouter.get('/:id', controller.getbyId);
 userRouter.post('/login', controller.loginUser);
 userRouter.get('/me', verifyToken, controller.getMe);
+userRouter.put('/:id',verifyToken, controller.updateUser);
+userRouter.get('/:id', controller.getbyId);
 
 export default userRouter;

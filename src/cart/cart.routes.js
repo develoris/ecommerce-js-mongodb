@@ -5,8 +5,9 @@ import verifyToken from '../middleware/authMiddleware.js';
 const carrelloRouter = Router();
 
 carrelloRouter.post('/', verifyToken, controller.createCart);
-carrelloRouter.put('/:idCart/addProduct/:idProduct', verifyToken, controller.addProductToCart);
-carrelloRouter.get('/:id',verifyToken, controller.getCartWithDetails); // Aggiungi questa rotta
 carrelloRouter.get('/', controller.getAll);
+carrelloRouter.get('/me', verifyToken, controller.getMe);
+carrelloRouter.get('/:id',verifyToken, controller.getCartWithDetails); // Aggiungi questa rotta
+carrelloRouter.put('/:idCart/addProduct/:idProduct', verifyToken, controller.addProductToCart);
 
 export default carrelloRouter;

@@ -11,7 +11,7 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}\\src\\Prodotti\\Product.root.js"
+            "program": "${workspaceFolder}\\src\\Prodotti\\Product.routes.js"
         },
         {
             "name": "npm start",

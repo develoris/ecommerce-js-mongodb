@@ -5,8 +5,8 @@ import verifyToken from '../middleware/authMiddleware.js';
 const productRouter = Router();
 
 productRouter.get('/',controller.getAll);
-productRouter.get('/:id',controller.getById);
 productRouter.post('/create', verifyToken, controller.create);
+productRouter.get('/:id',controller.getById);
 productRouter.put('/:id', verifyToken, controller.update);
 productRouter.delete('/:id', verifyToken, controller.deleteOne);
 

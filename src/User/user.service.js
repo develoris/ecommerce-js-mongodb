@@ -91,6 +91,11 @@ export const login = async (email, password) => {
         const tokenPayload = { userId: user._id, email: user.email, fullName: `${user.name} ${user.surname}` };
         const expInSecTok = +process.env.TOKEN_TIME_SECOND;
 
+
+        const tokenExist = await getCollection('Token').findOne({  userId: user._id });
+        if (tokenExist) {
+            await getCollection('Token').deleteOne({  userId: user._id });
+        } 
         const token = jwt.sign(tokenPayload, process.env.SECRET_KEY, {
             expiresIn: expInSecTok
         })
@@ -115,6 +120,7 @@ export const login = async (email, password) => {
 export const getMe = async (id) => {
     try {
         const _id = new ObjectId (id)
+
         const userMe = await getCollection('User').findOne({_id})
         return userMe;
     } catch (error) {
