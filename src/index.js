@@ -5,9 +5,16 @@ import { connectDB } from './DataBase/DbConnection.js';
 import carrelloRouter from './cart/cart.routes.js';
 import userRouter from './User/user.routes.js';
 import categoryRouter from './Category/category.routes.js';
+import cors from 'cors';
 
 const server = express();
 server.use(express.json());
+
+const corsOption = {
+    origin: '*'
+}
+
+server.use(cors(corsOption))
 
 server.get('/', (req, res) => {
     return res.send('hello world');
