@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { getCollection, client, clientDb } from '../DataBase/DbConnection.js';
+import { getCollection } from '../DataBase/DbConnection.js';
 import { getProductById } from '../Product/Product.service.js';
 
 const cartCollection = getCollection('Cart');

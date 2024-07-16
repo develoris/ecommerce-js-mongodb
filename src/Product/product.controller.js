@@ -1,4 +1,5 @@
 import * as service from './Product.service.js';
+import jwt from 'jsonwebtoken';
 
 /**
  * @param {import('express').Request} req 
@@ -25,9 +26,6 @@ export const getById = async (req, res, next) => {
 
     try {
         const product = await service.getProductById(id);
-        if (!product) {
-            return res.status(404).json({ message: 'Prodotto non trovato' });
-        }
         return res.json(product);
     } catch (error) {
         next(error);
@@ -40,14 +38,25 @@ export const getById = async (req, res, next) => {
  * @returns 
  */
 export const create = async (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) {
+        return res.status(401).json({ message: 'Authorization token is missing' });
+    }
+
+        const decoded = jwt.verify(token, process.env.SECRET_KEY);
+        const idUser = decoded.userId;
+
     const data = {
         ...req.body,
+        userId: idUser, 
         price: parseFloat(req.body.price)
     }
     try {
         const newProduct = await service.create(data);
         const getProduct = await service.getProductById(newProduct.insertedId)
-        return res.send({message: 'Prodotto inserito', getProduct})
+        return res.send({ message: 'Prodotto inserito', getProduct })
     } catch (error) {
         next(error);
     }
@@ -88,3 +97,4 @@ export const deleteOne = async (req, res, next) => {
         next(error);
     }
 }
+

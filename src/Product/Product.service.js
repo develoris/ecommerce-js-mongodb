@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { getCollection, clientDb } from '../DataBase/DbConnection.js';  
+import { getCollection } from '../DataBase/DbConnection.js';  
 
 //const getCollection('Product') = getCollection('Product');
 
@@ -77,3 +77,5 @@ export const deleteOne = async (id) => {
         throw error;
     }
 }
+
+

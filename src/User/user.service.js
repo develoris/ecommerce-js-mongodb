@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { getCollection, client, clientDb } from '../DataBase/DbConnection.js';
+import { getCollection } from '../DataBase/DbConnection.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
@@ -10,6 +10,10 @@ export const createUser = async (bodyObj) => {
             ...bodyObj,
             password: hashPassword
         };
+        const emailExist = await getCollection('User').findOne({ email: bodyObj.email })
+         if (emailExist) {
+             throw new Error (`This user already exist`)
+         }
         const newUser = await getCollection('User').insertOne(data);
         return newUser;
     } catch (error) {
@@ -100,7 +104,7 @@ export const login = async (email, password) => {
         const token = jwt.sign(tokenPayload, process.env.SECRET_KEY, {
             expiresIn: expInSecTok
         })
-        const refreshToken = jwt.sign({ userId: user.id, email: user.email, fullName: `${user.name} ${user.surname}` }, process.env.SECRET_KEY, { 
+        const refreshToken = jwt.sign({ userId: user._id, email: user.email, fullName: `${user.name} ${user.surname}` }, process.env.SECRET_KEY, { 
             expiresIn: expInSecRefTok
         });
 
@@ -111,7 +115,7 @@ export const login = async (email, password) => {
             expInSecTok
         })
 
-        return { token, expiresIn: expInSecTok, type: 'Bearer' }
+        return { token, refreshToken, expiresIn: expInSecTok, type: 'Bearer' }
     } catch (error) {
         throw error;
     }
@@ -132,17 +136,35 @@ export const getMe = async (id) => {
         throw error;
     }
 }
-// /**
-//  *
-//  * @param {string} id
-//  * @returns {Promise<any>} product by id
-//  */
-// export const getMe = async (id) => {
-//     try {
-//         const _id = new ObjectId(id);
-//         const userMe = await getCollection('User').findOne({_id})
-//         return userMe
-//     } catch (error) {
-//         throw error;
-//     }
-// }
+
+export const refreshToken = async (refreshTk) => {
+    try {
+        const decoded = jwt.verify(refreshTk, process.env.SECRET_KEY);
+        const tokenPayload = { userId: decoded.userId, email: decoded.email, fullName: decoded.fullName };
+        const accessToken = jwt.sign(tokenPayload, process.env.SECRET_KEY, { 
+            expiresIn: process.env.TOKEN_TIME_SECOND
+        });
+        return accessToken;
+    } catch (error) {
+        throw new Error('Invalid refresh token');
+    }
+}
+
+/**
+ * 
+ * @param {string} id_user 
+ * @returns 
+ */
+export const logoutUser = async (id_user) => {
+    try {
+        const _id = new ObjectId (id_user)
+        const result = await getCollection('Token').deleteOne({userId: _id});
+        if (result.deletedCount >= 1) {
+            return true;
+        } else {
+            throw new Error('No tokens found for the given user');
+        }
+    } catch (error) {
+        throw error;
+    }
+}

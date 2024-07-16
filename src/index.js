@@ -4,6 +4,7 @@ import productRouter from './Product/Product.routes.js';
 import { connectDB } from './DataBase/DbConnection.js';
 import carrelloRouter from './cart/cart.routes.js';
 import userRouter from './User/user.routes.js';
+import categoryRouter from './Category/category.routes.js';
 
 const server = express();
 server.use(express.json());
@@ -15,6 +16,7 @@ server.get('/', (req, res) => {
 server.use('/products', productRouter); // Usa il router per le rotte dei prodotti
 server.use('/cart', carrelloRouter) //usa il router per le rotte del carrello
 server.use('/user', userRouter)
+server.use('/category', categoryRouter)
 
 server.use(errorHandler);
 

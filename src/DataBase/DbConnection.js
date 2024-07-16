@@ -10,11 +10,11 @@ const dbName = `E-commerce`;
 /**
  * @type {Db}
  */
-export let clientDb;
+// export let clientDb;
 export const connectDB = async () => {
     try {
         await client.connect();
-        clientDb = client.db(dbName);
+        // clientDb = client.db(dbName);
         console.log(`Connected successfully to MongoDB`);
     } catch (error) {
         console.error('Error connecting to MongoDB:', error);
