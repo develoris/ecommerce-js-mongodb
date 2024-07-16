@@ -6,15 +6,14 @@ const url = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWOR
 export const client = new MongoClient(url//, { useNewUrlParser: true, useUnifiedTopology: true }
 );
 //const dbName = `e-commerce_Ivan`;
-const dbName = `E-commerce`;
+const dbName = process.env.MONGO_DBNAME;
 /**
  * @type {Db}
  */
-// export let clientDb;
+
 export const connectDB = async () => {
     try {
         await client.connect();
-        // clientDb = client.db(dbName);
         console.log(`Connected successfully to MongoDB`);
     } catch (error) {
         console.error('Error connecting to MongoDB:', error);
