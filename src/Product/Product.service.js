@@ -34,11 +34,13 @@ export const getProductById = async (id) => {
 
 /**
  * 
- * @param {dataObj} dataObj 
- * @returns {Promise<any>} riusltato della create
+ * @param {DataObj} dataObj 
+ * @returns 
  */
 export const create = async (dataObj) => {
 try {
+    dataObj.userId = new ObjectId(dataObj.userId);
+    dataObj.category = new ObjectId(dataObj.category);
     const newProduct = await getCollection('Product').insertOne(dataObj);
     return newProduct;
 } catch (error) {
@@ -78,4 +80,16 @@ export const deleteOne = async (id) => {
     }
 }
 
-
+/**
+ * 
+ * @param {string} userId 
+ */
+export const getProductByUserId = async (userId) => {
+    try {
+        const _id = new ObjectId(userId);
+        const products = await getCollection('Product').find({ userId: _id }).toArray();
+        return products;
+    } catch (error) {
+        throw error;
+    }
+}
