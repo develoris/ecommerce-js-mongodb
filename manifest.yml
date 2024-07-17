@@ -1,0 +1,8 @@
+---
+applications:
+- name: e-commerce
+  random-route: true
+  path: .
+  memory: 128M
+  buildpacks:
+  - nodejs_buildpack
