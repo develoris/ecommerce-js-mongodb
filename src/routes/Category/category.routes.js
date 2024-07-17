@@ -1,6 +1,6 @@
 import { Router } from 'express'; 
 import * as controller from './category.controller.js';
-import verifyToken from '../middleware/authMiddleware.js';
+import verifyToken from '../../middleware/authMiddleware.js';
 
 const categoryRouter = Router();
 

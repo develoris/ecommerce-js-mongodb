@@ -14,7 +14,8 @@ export const getAll = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
-}
+};
+
 /**
  * @param {import('express').Request} req 
  * @param {import('express').Response} res 
@@ -31,6 +32,7 @@ export const getById = async (req, res, next) => {
         next(error);
     }
 };
+
 /**
  * @param {import('express').Request} req 
  * @param {import('express').Response} res 
@@ -60,7 +62,7 @@ export const create = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
-}
+};
 
 /**
  * @param {import('express').Request} req 
@@ -81,7 +83,8 @@ export const update = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
-}
+};
+
 /**
  * @param {import('express').Request} req 
  * @param {import('express').Response} res 
@@ -96,5 +99,27 @@ export const deleteOne = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
-}
+};
 
+/**
+ * @param {import('express').Request} req 
+ * @param {import('express').Response} res 
+ * @param {*} next 
+ * @returns 
+ */
+export const productMe = async (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    if (!token) {
+        return res.status(401).json({ message: 'Authorization token is missing' });
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.SECRET_KEY);
+        const idUser = decoded.userId;
+        const productMe = await service.getProductByUserId(idUser);
+        return res.json({ productMe });
+    } catch (error) {
+        next(error);
+    }
+}

@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { getCollection } from '../DataBase/DbConnection.js';  
+import { getCollection } from '../../DataBase/DbConnection.js';  
 
 //const getCollection('Product') = getCollection('Product');
 
@@ -19,7 +19,7 @@ export const getProduct = async () => {
 /**
  * 
  * @param {string} id 
- * @returns {Promise<any>} product by id
+ * @returns {Promise<any>}
  */
 export const getProductById = async (id) => {
     try {
@@ -34,11 +34,13 @@ export const getProductById = async (id) => {
 
 /**
  * 
- * @param {dataObj} dataObj 
- * @returns {Promise<any>} riusltato della create
+ * @param {DataObj} dataObj 
+ * @returns {Promise<any>}
  */
 export const create = async (dataObj) => {
 try {
+    dataObj.userId = new ObjectId(dataObj.userId);
+    dataObj.category = new ObjectId(dataObj.category);
     const newProduct = await getCollection('Product').insertOne(dataObj);
     return newProduct;
 } catch (error) {
@@ -46,10 +48,9 @@ try {
 }
 };
 
-
 /**
  * 
- * @param {DataObj} dataObj 
+ * @param {DataObj} DataObj 
  * @param {string} id 
  * @returns {Promise<any>} risultato dell'update
  */
@@ -66,7 +67,7 @@ export const updateById = async (dataObj, id) => {
 /**
  * 
  * @param {string} id 
- * @returns {Promise<any>} risultato della delete
+ * @returns {Promise<any>}
  */
 export const deleteOne = async (id) => {
     try {
@@ -78,4 +79,17 @@ export const deleteOne = async (id) => {
     }
 }
 
-
+/**
+ * 
+ * @param {string} userId 
+ * @returns {Promise<any>}
+ */
+export const getProductByUserId = async (userId) => {
+    try {
+        const _id = new ObjectId(userId);
+        const products = await getCollection('Product').find({ userId: _id  }).toArray();
+        return products;
+    } catch (error) {
+        throw error;
+    }
+}

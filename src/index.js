@@ -1,10 +1,10 @@
 import express from 'express';
 import errorHandler from './middleware/errorHandler.js';
-import productRouter from './Product/Product.routes.js';
+import productRouter from './routes/Product/Product.routes.js';
 import { connectDB } from './DataBase/DbConnection.js';
-import carrelloRouter from './cart/cart.routes.js';
-import userRouter from './User/user.routes.js';
-import categoryRouter from './Category/category.routes.js';
+import carrelloRouter from './routes/cart/cart.routes.js';
+import userRouter from './routes/User/user.routes.js';
+import categoryRouter from './routes/Category/category.routes.js';
 import cors from 'cors';
 
 const server = express();

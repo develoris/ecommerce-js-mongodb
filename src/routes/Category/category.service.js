@@ -1,7 +1,9 @@
 import { ObjectId } from 'mongodb';
-import { getCollection } from '../DataBase/DbConnection.js';
-import errorHandler from '../middleware/errorHandler.js';
+import { getCollection } from '../../DataBase/DbConnection.js';
 
+/**
+ * @returns {Promise<any[]>}
+ */
 export const getAll = async () => {
     try {
         const getAll = await getCollection('Category').find({}).toArray();
@@ -11,13 +13,17 @@ export const getAll = async () => {
     }
 }
 
-export const create = async (dtlBody) => {
+/**
+ * @param {string} category 
+ * @returns {Promise<any>}
+ */
+export const create = async (category) => {
     try {
-        const categoryExist = await getCollection('Category').findOne({ category: dtlBody.category});
+        const categoryExist = await getCollection('Category').findOne({ category });
         if (categoryExist) {
             throw new Error('This category already exist')
         }
-        const newDtl = await getCollection('Category').insertOne(dtlBody);
+        const newDtl = await getCollection('Category').insertOne(category);
         return newDtl;
     } catch (error) {
         throw error;
@@ -25,9 +31,8 @@ export const create = async (dtlBody) => {
 }
 
 /**
- * 
  * @param {string} id 
- * @returns 
+ * @returns {Promise<any>}
  */
 export const getById = async (id) => {
     try {
@@ -41,9 +46,8 @@ export const getById = async (id) => {
 }
 
 /**
- * 
  * @param {string} id 
- * @returns 
+ * @returns {Promise<any>}
  */
 export const deleteById= async (id) => {
     try {
@@ -60,9 +64,10 @@ export const deleteById= async (id) => {
     }
 }
 
-/**
- * 
+/** 
  * @param {string} id 
+ * @param {string} category 
+ * @returns {Promise<any>}
  */
 export const updateById = async (id, category) => {
     try {

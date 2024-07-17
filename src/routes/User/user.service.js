@@ -1,8 +1,13 @@
 import { ObjectId } from 'mongodb';
-import { getCollection } from '../DataBase/DbConnection.js';
+import { getCollection } from '../../DataBase/DbConnection.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
+/**
+ * 
+ * @param {bodyObj} bodyObj 
+ * @returns {Promise<any>}
+ */
 export const createUser = async (bodyObj) => {
     try {
         const hashPassword = await bcrypt.hash(bodyObj.password, 10);
@@ -21,6 +26,10 @@ export const createUser = async (bodyObj) => {
     }
 }
 
+/**
+ * 
+ * @returns {Promise<any[]>}
+ */
 export const getAllUser = async () => {
     try {
         const getAll = await getCollection('User').find().toArray();
@@ -48,7 +57,8 @@ export const getUserById = async (id) => {
 /**
  * 
  * @param {string} id 
- * @returns {Promise<any>} product by id
+ * @param {DataObj} dataObj 
+ * @returns {Promise<any>}
  */
 export const updateUser = async (id, dataObj) => {
     const _id = new ObjectId(id);
@@ -80,6 +90,12 @@ export const deleteUser = async (id) => {
     }
 }
 
+/**
+ * 
+ * @param {string} email 
+ * @param {string} password 
+ * @returns {Promise<any>}
+ */
 export const login = async (email, password) => {
     try {
         const user = await getCollection('User').findOne({ email: email });
@@ -121,10 +137,10 @@ export const login = async (email, password) => {
     }
 }
 
-
 /**
  * 
  * @param {string} id 
+ * @returns {Promise<any>}
  */
 export const getMe = async (id) => {
     try {
@@ -137,6 +153,11 @@ export const getMe = async (id) => {
     }
 }
 
+/**
+ * 
+ * @param {string} refreshTk 
+ * @returns {Promise<any>}
+ */
 export const refreshToken = async (refreshTk) => {
     try {
         const decoded = jwt.verify(refreshTk, process.env.SECRET_KEY);
@@ -153,7 +174,7 @@ export const refreshToken = async (refreshTk) => {
 /**
  * 
  * @param {string} id_user 
- * @returns 
+ * @returns {Promise<any>}
  */
 export const logoutUser = async (id_user) => {
     try {
