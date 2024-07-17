@@ -19,7 +19,7 @@ export const getProduct = async () => {
 /**
  * 
  * @param {string} id 
- * @returns {Promise<any>} product by id
+ * @returns {Promise<any>}
  */
 export const getProductById = async (id) => {
     try {
@@ -35,7 +35,7 @@ export const getProductById = async (id) => {
 /**
  * 
  * @param {DataObj} dataObj 
- * @returns 
+ * @returns {Promise<any>}
  */
 export const create = async (dataObj) => {
 try {
@@ -48,10 +48,9 @@ try {
 }
 };
 
-
 /**
  * 
- * @param {DataObj} dataObj 
+ * @param {DataObj} DataObj 
  * @param {string} id 
  * @returns {Promise<any>} risultato dell'update
  */
@@ -68,7 +67,7 @@ export const updateById = async (dataObj, id) => {
 /**
  * 
  * @param {string} id 
- * @returns {Promise<any>} risultato della delete
+ * @returns {Promise<any>}
  */
 export const deleteOne = async (id) => {
     try {
@@ -83,11 +82,12 @@ export const deleteOne = async (id) => {
 /**
  * 
  * @param {string} userId 
+ * @returns {Promise<any>}
  */
 export const getProductByUserId = async (userId) => {
     try {
         const _id = new ObjectId(userId);
-        const products = await getCollection('Product').find({ userId: _id }).toArray();
+        const products = await getCollection('Product').find({ userId: _id  }).toArray();
         return products;
     } catch (error) {
         throw error;

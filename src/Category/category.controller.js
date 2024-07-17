@@ -1,5 +1,10 @@
 import * as service from './category.service.js';
-
+/**
+ * @param {import('express').Request} req 
+ * @param {import('express').Response} res 
+ * @param {*} next 
+ * @returns 
+ */
 export const getAll = async (req, res, next) => {
     try {
         const getAll = await service.getAll();
@@ -8,10 +13,17 @@ export const getAll = async (req, res, next) => {
         next(error);
     }
 }
+
+/**
+ * @param {import('express').Request} req 
+ * @param {import('express').Response} res 
+ * @param {*} next 
+ * @returns 
+ */
 export const create = async (req, res, next) => {
-    const body = { ...req.body}
+    const category = req.body.category
     try {
-        const create = await service.create(body);
+        const create = await service.create(category);
         const getCategory = await service.getById(create.insertedId);
         return res.send({getCategory});
     } catch (error) {
@@ -19,6 +31,12 @@ export const create = async (req, res, next) => {
     }
 }
 
+/**
+ * @param {import('express').Request} req 
+ * @param {import('express').Response} res 
+ * @param {*} next 
+ * @returns 
+ */
 export const getById = async (req, res, next) => {
     const id = req.params.id
 
@@ -30,6 +48,12 @@ export const getById = async (req, res, next) => {
     }
 }
 
+/**
+ * @param {import('express').Request} req 
+ * @param {import('express').Response} res 
+ * @param {*} next 
+ * @returns 
+ */
 export const deleteById = async (req, res, next) => {
     const id = req.params.id
     try {
@@ -41,6 +65,12 @@ export const deleteById = async (req, res, next) => {
     }
 }
 
+/**
+ * @param {import('express').Request} req 
+ * @param {import('express').Response} res 
+ * @param {*} next 
+ * @returns 
+ */
 export const updateById = async (req, res, next) => {
     const id = req.params.id;
     const { category } = req.body;
