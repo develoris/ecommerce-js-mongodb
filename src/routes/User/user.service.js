@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { getCollection } from '../DataBase/DbConnection.js';
+import { getCollection } from '../../DataBase/DbConnection.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
