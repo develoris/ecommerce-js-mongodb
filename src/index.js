@@ -13,7 +13,7 @@ server.use(express.json());
 const corsOption = {
     origin: '*'
 }
-
+console.log('test for git graph')
 server.use(cors(corsOption))
 
 server.get('/', (req, res) => {

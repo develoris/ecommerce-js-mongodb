@@ -23,7 +23,8 @@ export const create = async (category) => {
         if (categoryExist) {
             throw new Error('This category already exist')
         }
-        const newDtl = await getCollection('Category').insertOne(category);
+        const newCategory = { category }; // Creazione dell'oggetto documento con il campo category
+        const newDtl = await getCollection('Category').insertOne(newCategory);
         return newDtl;
     } catch (error) {
         throw error;
@@ -35,9 +36,9 @@ export const create = async (category) => {
  * @returns {Promise<any>}
  */
 export const getById = async (id) => {
-    try {
-        const _id = new ObjectId(id);
 
+    const _id = new ObjectId(id);
+    try {
         const getOne = await getCollection('Category').findOne({ _id });
         return getOne;
     } catch (error) {
@@ -49,15 +50,15 @@ export const getById = async (id) => {
  * @param {string} id 
  * @returns {Promise<any>}
  */
-export const deleteById= async (id) => {
+export const deleteById = async (id) => {
     try {
         const _id = new ObjectId(id);
-        
+
         const categoryExist = await getCollection('Category').findOne({ _id });
         if (!categoryExist) {
             throw new Error(`This category dosen't exist`)
         }
-        const deleteById = await getCollection('Category').deleteOne({_id});
+        const deleteById = await getCollection('Category').deleteOne({ _id });
         return deleteById;
     } catch (error) {
         throw error;
@@ -76,7 +77,7 @@ export const updateById = async (id, category) => {
         if (!categoryExist) {
             throw new Error(`This category dosen't exist`)
         }
-        const updateResult = await getCollection('Category').updateOne({ _id }, { $set: {category} });
+        const updateResult = await getCollection('Category').updateOne({ _id }, { $set: { category } });
         return updateResult;
     } catch (error) {
         throw error;
