@@ -53,7 +53,7 @@ export const getCartWithDetails = async (req, res, next) => {
     const id = req.params.id;
 
     try {
-        const cart = await service.getMe(id);
+        const cart = await service.getCartByIdWithDetails(id);
         if (!cart) {
             return res.status(404).json({ message: 'Carrello non trovato' });
         }

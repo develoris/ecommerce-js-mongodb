@@ -70,7 +70,7 @@ export const getCartById = async (id) => {
     try {
         const _id = new ObjectId(id);
         const cart = await getCollection('Cart').findOne({ _id });
-        return cart;
+        return resizeBy.send({cart});
     } catch (error) {
         throw error;
     }
