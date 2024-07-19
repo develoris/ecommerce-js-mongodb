@@ -1,5 +1,5 @@
 /**
- * @typedef {object} DataObj
+ * @typedef {object} dataObj
  * @property {string} name 
  * @property {string} category 
  * @property {string} description

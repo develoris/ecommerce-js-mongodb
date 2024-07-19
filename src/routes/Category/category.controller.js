@@ -42,7 +42,7 @@ export const getById = async (req, res, next) => {
 
     try {
         const getById = await service.getById(id);
-        return getById
+        return res.send({getById})
     } catch (error) {
         next(error);
     }
