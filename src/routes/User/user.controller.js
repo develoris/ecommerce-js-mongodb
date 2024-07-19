@@ -47,7 +47,7 @@ export const getbyId = async (req, res, next) => {
     const id = req.params.id;
     try {
         const getUser = await service.getUserById(id)
-        return res.send({getUser})
+        return res.send(getUser)
     } catch (error) {
         next(error);
     }
@@ -84,7 +84,7 @@ export const deleteUser = async (req, res, next) => {
     try {
         await service.deleteUser(id);
         const getAll = await service.getAllUser();
-        return getAll;
+        return res.send(getAll);
     } catch (error) {
         next(error)
     }
