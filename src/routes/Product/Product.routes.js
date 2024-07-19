@@ -2,7 +2,7 @@ import { Router } from 'express';
 import * as controller from './product.controller.js';
 import verifyToken from '../../middleware/authMiddleware.js';
 import { validate } from 'express-validation';
-import { createProductValidation, updateProductValidation, idValidation } from '../../middleware/validation.js';
+import { createProductValidation, updateProductValidation, idValidation } from './product.validation.js';
 
 const productRouter = Router();
 

@@ -2,7 +2,7 @@ import { Router } from 'express';
 import * as controller from './cart.controller.js';
 import verifyToken from '../../middleware/authMiddleware.js';
 import { validate } from 'express-validation';
-import { addProductToCartValidation, idValidation } from '../../middleware/validation.js';
+import { addProductToCartValidation, idValidation } from './cart.validation.js';
 
 const carrelloRouter = Router();
 
