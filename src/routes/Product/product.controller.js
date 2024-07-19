@@ -118,7 +118,7 @@ export const productMe = async (req, res, next) => {
         const decoded = jwt.verify(token, process.env.SECRET_KEY);
         const idUser = decoded.userId;
         const productMe = await service.getProductByUserId(idUser);
-        return res.json({ productMe });
+        return res.json( productMe );
     } catch (error) {
         next(error);
     }

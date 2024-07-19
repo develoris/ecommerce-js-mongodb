@@ -8,7 +8,7 @@ import * as service from './category.service.js';
 export const getAll = async (req, res, next) => {
     try {
         const getAll = await service.getAll();
-        return res.send({getAll})
+        return res.send(getAll)
     } catch (error) {
         next(error);
     }
@@ -25,7 +25,7 @@ export const create = async (req, res, next) => {
     try {
         const create = await service.create(category);
         const getCategory = await service.getById(create.insertedId);
-        return res.send({getCategory});
+        return res.send(getCategory);
     } catch (error) {
         next(error);
     }
@@ -42,7 +42,7 @@ export const getById = async (req, res, next) => {
 
     try {
         const getById = await service.getById(id);
-        return res.send({getById})
+        return res.send(getById)
     } catch (error) {
         next(error);
     }
@@ -59,7 +59,7 @@ export const deleteById = async (req, res, next) => {
     try {
         await service.deleteById(id);
         const getAll = await service.getAll()
-        return res.send({getAll});
+        return res.send(getAll);
     } catch (error) {
         next(error);
     }
@@ -77,7 +77,7 @@ export const updateById = async (req, res, next) => {
     try {
         await service.updateById(id, category);
         const getAll = await service.getById(id)
-        return res.send({getAll});
+        return res.send(getAll);
     } catch (error) {
         next(error);
     }
