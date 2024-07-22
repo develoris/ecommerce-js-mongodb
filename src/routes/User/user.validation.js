@@ -12,8 +12,8 @@ export const createUserValidation = {
   
   export const loginUserValidation = {
     body: Joi.object({
-      email: Joi.string().email().required(),
-      password: Joi.string().min(4).max(30).required(),  // Aggiunto .required() per obbligare il campo password
+      email: Joi.string().email().required()
+      //password: Joi.string().min(4).max(30).required(),  // Aggiunto .required() per obbligare il campo password
     }),
   };
   
@@ -25,9 +25,9 @@ export const createUserValidation = {
       name: Joi.string(),
       surname: Joi.string(),
       dateofbirth: Joi.date().iso(),
-      email: Joi.string().email(),
-      password: Joi.string().regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$@!%&*?._-])[A-Za-z\d#$@!%&*?._-]{4,30}$/),
-      group: Joi.string(),
+      email: Joi.string().email()
+      //password: Joi.string().regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$@!%&*?._-])[A-Za-z\d#$@!%&*?._-]{4,30}$/),
+      //group: Joi.string(),
     }).min(1),  // Almeno un campo deve essere presente
   };
 
