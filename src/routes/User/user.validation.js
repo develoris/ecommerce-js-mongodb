@@ -12,8 +12,8 @@ export const createUserValidation = {
   
   export const loginUserValidation = {
     body: Joi.object({
-      email: Joi.string().email().required()
-      //password: Joi.string().min(4).max(30).required(),  // Aggiunto .required() per obbligare il campo password
+      email: Joi.string().email().required(),
+      password: Joi.string().required(),  // Aggiunto .required() per obbligare il campo password
     }),
   };
   
