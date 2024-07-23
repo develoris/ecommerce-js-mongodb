@@ -1,6 +1,6 @@
 import { Joi } from 'express-validation';
 
-export const createUserValidation = {
+export const register = {
   body: Joi.object({
     name: Joi.string().required(),
     surname: Joi.string().required(),
@@ -10,14 +10,14 @@ export const createUserValidation = {
   }),
 };
   
-  export const loginUserValidation = {
+  export const login = {
     body: Joi.object({
-      email: Joi.string().email().required()
-      //password: Joi.string().min(4).max(30).required(),  // Aggiunto .required() per obbligare il campo password
+      email: Joi.string().email().required(),
+      password: Joi.string().required(),  // Aggiunto .required() per obbligare il campo password
     }),
   };
   
-  export const updateUserValidation = {
+  export const updateUser = {
     params: Joi.object({
       id: Joi.string().hex().length(24).required(),
     }),
