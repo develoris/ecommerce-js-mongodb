@@ -30,3 +30,14 @@ export const createProductValidation = {
       id: Joi.string().hex().length(24).required(),
     }),
   };
+
+  export const getProductQuery = {
+    query: Joi.object({
+      page: Joi.number().required(),
+      limit: Joi.number().required(), 
+      sort: Joi.string(), 
+      order: Joi.string().valid('asc', 'desc'), 
+      minPrice: Joi.number().precision(2),
+      maxPrice: Joi.number().precision(2)
+    })
+  }

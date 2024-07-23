@@ -3,17 +3,64 @@ import { getCollection } from '../../DataBase/DbConnection.js';
 import { lookup_product, lookup_productById } from './product.lookup.js';
 
 /**
- * @returns {Promise<any[]>} all products with category and user details replacing the respective fields 
+ * 
+ * @param {queryObj} queryParams 
+ * @returns 
  */
-export const getProduct = async () => {
+export const getProduct = async (queryParams) => {
     try {
-        const products = await getCollection('Product').aggregate(lookup_product).toArray();
+        const { page, limit , sort = 'name', order, minPrice, maxPrice, ...fieldsFilter} = queryParams;
 
-        return products;
+        const skip = (page - 1) * limit;
+        
+        const filter = {...fieldsFilter};
+        if (minPrice) filter.price = { ...filter.price, $gte: parseFloat(minPrice) };
+        if (maxPrice) filter.price = { ...filter.price, $lte: parseFloat(maxPrice) };
+
+        for (const [key, value] of Object.entries(fieldsFilter)) {
+            if (Array.isArray(value)) {
+                filter[key] = { $in: value };
+            } else if (typeof value === 'string' && value.includes(',')) {
+                filter[key] = { $in: value.split(',') };
+            } else if (typeof value === 'string') {
+                // Utilizza $regex per la ricerca parziale
+                filter[key] = { $regex: value, $options: 'i' }; // 'i' per case-insensitive
+            } else {
+                filter[key] = value;
+            }
+        }
+        
+        const pipeline = [
+            { $match: filter },
+            ...lookup_product,
+            { $skip: skip },
+            { $limit: +limit },
+            { $sort: { [sort]: order === 'asc' ? 1 : -1 } }
+        ];
+
+        const products = await getCollection('Product')
+            .aggregate(pipeline)
+            .toArray();
+
+        // Conta il numero totale di documenti
+        const totalProducts = await getCollection('Product').countDocuments(filter);
+        const totalPages = Math.ceil(totalProducts / limit);
+
+        // Costruisce i percorsi per i link
+        const buildPath = (page) => `/products?sort=${sort}&order=${order}&limit=${limit}&page=${page}`;
+        
+        return {
+            pages: totalPages,
+            products: products.map(p => {delete p.userId; return p}),
+            first: buildPath(1),
+            previous: page > 1 ? buildPath(page - 1) : null,
+            next: page < totalPages ? buildPath(page + 1) : null
+        };
     } catch (error) {
+        console.error('Error in getProduct:', error); // Add detailed error logging
         throw error;
     }
-}
+};
 
 /**
  * 
@@ -24,13 +71,11 @@ export const getProductById = async (id) => {
     try {
         const _id = new ObjectId(id);
         const product = await getCollection('Product').aggregate(lookup_productById(_id)).toArray();
-
         return product[0]; // Restituisce il primo elemento dell'array risultante
     } catch (error) {
         throw error;
     }
 };
-
 
 /**
  * 
