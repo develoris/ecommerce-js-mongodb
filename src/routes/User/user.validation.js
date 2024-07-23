@@ -1,10 +1,11 @@
 import { Joi } from 'express-validation';
-
+import joiDate from '@joi/date';
+const joiExtend = Joi.extend(joiDate)
 export const register = {
   body: Joi.object({
     name: Joi.string().required(),
     surname: Joi.string().required(),
-    dateofbirth: Joi.date().iso().required(),
+    dateOfBirth: joiExtend.date().format('YYYY-MM-DD').utc().required(),
     email: Joi.string().email().required(),
     password: Joi.string().regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$@!%&*?._-])[A-Za-z\d#$@!%&*?._-]{4,30}$/).required(),
   }),
@@ -24,7 +25,7 @@ export const register = {
     body: Joi.object({
       name: Joi.string(),
       surname: Joi.string(),
-      dateofbirth: Joi.date().iso(),
+      dateOfBirth: joiExtend.date().format('YYYY-MM-DD').utc(),
       email: Joi.string().email()
       //password: Joi.string().regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$@!%&*?._-])[A-Za-z\d#$@!%&*?._-]{4,30}$/),
       //group: Joi.string(),
