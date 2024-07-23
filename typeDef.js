@@ -33,3 +33,12 @@
  * @property {Date} insertAt - Date insert
  */
 
+/** page, limit, sort, order, minPrice, maxPrice
+ * @typedef {object} queryObj
+ * @property {number} page
+ * @property {number} limit
+ * @property {string} sort
+ * @property {string} order
+ * @property {string} minPrice
+ * @property {string} maxPrice
+ */

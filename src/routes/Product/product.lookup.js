@@ -8,35 +8,13 @@ export const lookup_product = [
         }
     },
     {
-        $lookup: {
-            from: 'User',
-            localField: 'userId',
-            foreignField: '_id',
-            as: 'userDetails'
-        }
-    },
-    {
         $addFields: {
             category: { $arrayElemAt: ['$categoryDetails', 0] },
-            user: {
-                name: { $arrayElemAt: ['$userDetails.name', 0] },
-                surname: { $arrayElemAt: ['$userDetails.surname', 0] },
-                fullname: {
-                    $concat: [
-                        { $arrayElemAt: ['$userDetails.name', 0] },
-                        ' ',
-                        { $arrayElemAt: ['$userDetails.surname', 0] }
-                    ]
-                },
-                email: { $arrayElemAt: ['$userDetails.email', 0] }
-            }
         }
     },
     {
         $project: {
-            categoryDetails: 0,
-            userDetails: 0,
-            userId: 0
+            categoryDetails: 0
         }
     }
 ];

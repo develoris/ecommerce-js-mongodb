@@ -9,8 +9,15 @@ import jwt from 'jsonwebtoken';
  */
 export const getAll = async (req, res, next) => {
     try {
-        const products = await service.getProduct();
-        return res.json(products);
+        const filters = {
+            ...req.query,
+            order: req.query.order.toLocaleLowerCase(),
+            page: +req.query.page,
+            limit: +req.query.limit
+        }
+        const result = await service.getProduct(filters);
+
+        return res.json(result);
     } catch (error) {
         next(error);
     }
