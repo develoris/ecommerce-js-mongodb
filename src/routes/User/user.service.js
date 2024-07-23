@@ -63,10 +63,10 @@ export const getUserById = async (id) => {
 export const updateUser = async (id, dataObj) => {
     const _id = new ObjectId(id);
     try {
-        const hashPassword = await bcrypt.hash(dataObj.password, 10);
+        //const hashPassword = await bcrypt.hash(dataObj.password, 10);
         const data = {
             ...dataObj,
-            password: hashPassword
+           // password: hashPassword
         };
         const updateUser = await getCollection('User').updateOne({ _id }, { $set: data });
         return updateUser;
