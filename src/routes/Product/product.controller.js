@@ -11,7 +11,7 @@ export const getAll = async (req, res, next) => {
     try {
         const filters = {
             ...req.query,
-            order: req.query.order.toLowerCase(),
+            //order: req.query.order.toLowerCase(),
             page: +req.query.page,
             limit: +req.query.limit
         }
