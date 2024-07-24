@@ -8,6 +8,11 @@ export const createProductValidation = {
       qty_stock: Joi.number().integer().required(),
       price: Joi.number().precision(2).required(),
       status: Joi.string().valid('active', 'inactive').required(),
+      // image: {
+      //   name: Joi.string().required(),
+      //   type: Joi.string().valid('image/JPEG', 'image/JPG', 'image/PNG').insensitive().required(),
+      //   data: Joi.string().required()
+      // }
     }),
   };
   
