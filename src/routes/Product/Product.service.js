@@ -9,7 +9,7 @@ import { lookup_product, lookup_productById } from './product.lookup.js';
  */
 export const getProduct = async (queryParams) => {
     try {
-        const { page, limit , sort = 'name', order, minPrice, maxPrice, ...fieldsFilter} = queryParams;
+        const { page, limit , sort = 'name', order = 'asc', minPrice, maxPrice, ...fieldsFilter} = queryParams;
 
         const skip = (page - 1) * limit;
         
