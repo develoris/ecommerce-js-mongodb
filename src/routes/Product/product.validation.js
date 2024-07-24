@@ -27,6 +27,11 @@ export const createProductValidation = {
       qty_stock: Joi.number().integer(),
       price: Joi.number().precision(2),
       status: Joi.string().valid('active', 'inactive'),
+      image: {
+        name: Joi.string(),
+        type: Joi.string().valid('image/JPEG', 'image/JPG', 'image/PNG').insensitive(),
+        data: Joi.string()
+      }
     }).min(1),  // Almeno un campo deve essere presente
   };
 
@@ -41,7 +46,7 @@ export const createProductValidation = {
       page: Joi.number().required(),
       limit: Joi.number().required(), 
       sort: Joi.string(), 
-      order: Joi.string().valid('asc', 'desc'), 
+      order: Joi.string().valid('asc', 'desc').insensitive(), 
       // minPrice: Joi.number().precision(2),
       // maxPrice: Joi.number().precision(2)
     })
