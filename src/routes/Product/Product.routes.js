@@ -8,7 +8,7 @@ const productRouter = Router();
 
 productRouter.get('/',controller.getAll);
 productRouter.post('/', verifyToken, validate(val.createProductValidation, {}, {}), controller.create);
-productRouter.get('/me', verifyToken, validate(val.getProductQuery, {}, {}), controller.productMe);
+productRouter.get('/me', verifyToken, controller.productMe);
 productRouter.get('/:id', validate(val.idValidation, {}, {}), controller.getById);
 productRouter.put('/:id', verifyToken, validate(val.updateProductValidation, {}, {}),controller.update);
 productRouter.delete('/:id', verifyToken, validate(val.idValidation, {}, {}), controller.deleteOne);
