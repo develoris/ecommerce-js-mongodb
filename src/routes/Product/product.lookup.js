@@ -71,4 +71,33 @@ export const lookup_productById = (_id) => [
     }
 ];
 
-  
+
+
+/**
+ * Returns the aggregation pipeline for looking up product by ID.
+ * @param {ObjectId} _id - The ID of the product
+ * @returns {Array} The aggregation pipeline
+ */
+export const lookup_productByUserId = (_id) => [
+    {
+        $match: { userId: _id } // Filtra per l'ID specifico
+    }, 
+    {
+        $lookup: {
+            from: 'Category',
+            localField: 'category',
+            foreignField: '_id',
+            as: 'categoryDetails'
+        }
+    },
+    {
+        $addFields: {
+            category: { $arrayElemAt: ['$categoryDetails', 0] },
+        }
+    },
+    {
+        $project: {
+            categoryDetails: 0
+        }
+    }
+]

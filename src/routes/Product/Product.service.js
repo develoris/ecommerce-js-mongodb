@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { getCollection } from '../../DataBase/DbConnection.js';
-import { lookup_product, lookup_productById } from './product.lookup.js';
+import { lookup_product, lookup_productById, lookup_productByUserId } from './product.lookup.js';
 
 /**
  * 
@@ -132,7 +132,8 @@ export const deleteOne = async (id) => {
 export const getProductByUserId = async (userId) => {
     try {
         const _id = new ObjectId(userId);
-        const products = await getCollection('Product').find({ userId: _id }).toArray();
+        
+        const products = await getCollection('Product').aggregate(lookup_productByUserId(_id)).toArray();
         return products;
     } catch (error) {
         throw error;
