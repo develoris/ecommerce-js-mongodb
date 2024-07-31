@@ -10,7 +10,7 @@ const userRouter = Router();
 userRouter.get('/',controller.getAll);
 userRouter.post('/', validate(V.register, {}, {}), controller.create);
 userRouter.post('/login', validate(V.login, {}, {}), controller.loginUser);
-userRouter.delete('/logout', verifyToken, controller.deleteToken);
+userRouter.post('/logout', verifyToken, controller.deleteToken);
 userRouter.get('/me', verifyToken, controller.getMe);
 userRouter.post('/refresh',  controller.refreshToken);
 userRouter.put('/:id',verifyToken, validate(V.updateUser, {}, {}), controller.updateUser);

@@ -165,6 +165,8 @@ export const refreshToken = async (refreshTk) => {
         const accessToken = jwt.sign(tokenPayload, process.env.SECRET_KEY, { 
             expiresIn: process.env.TOKEN_TIME_SECOND
         });
+        const userId = new ObjectId ('' + decoded.userId)
+        await getCollection('Token').updateOne({userId}, {$set: {token: accessToken}})
         return accessToken;
     } catch (error) {
         throw new Error('Invalid refresh token');

@@ -253,7 +253,7 @@ paths:
           description: Eccezione di validazione
 
   /user/logout:
-    delete:
+    post:
       tags:
         - user
       summary: Esegui il logout dell'utente autenticato
