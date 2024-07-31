@@ -93,21 +93,54 @@ export const create = async (dataObj) => {
     }
 };
 
+// /**
+//  * 
+//  * @param {dataObj} dataObj 
+//  * @param {string} id 
+//  * @param {string} idUserToken 
+//  * @returns {Promise<any>} risultato dell'update
+//  */
+// export const updateById = async (dataObj, id, idUserToken) => {
+//     try {
+//         const _id = new ObjectId(id);
+//         const userId = new ObjectId(idUserToken);
+//         const updatedProduct = await getCollection('Product').updateOne({ _id: _id, userId: userId }, { $set: dataObj });
+//         return updatedProduct;
+//     } catch (error) {
+//         throw error;
+//     }
+// }
+
+
 /**
  * 
- * @param {dataObj} dataObj 
+ * @param {object} dataObj 
  * @param {string} id 
- * @returns {Promise<any>} risultato dell'update
+ * @param {string} idUserToken 
+ * @returns {Promise<any>} 
  */
-export const updateById = async (dataObj, id) => {
+export const updateById = async (dataObj, id, idUserToken) => {
     try {
         const _id = new ObjectId(id);
-        const updatedProduct = await getCollection('Product').updateOne({ _id }, { $set: dataObj });
+        const userId = new ObjectId(idUserToken);
+
+        const product = await getCollection('Product').findOne({ _id: _id });
+
+        if (!product.userId.equals(userId)) {
+            throw new Error('User not authorized to update this product');
+        }
+
+        const updatedProduct = await getCollection('Product').updateOne(
+            { _id: _id },
+            { $set: dataObj }
+        );
+
         return updatedProduct;
     } catch (error) {
         throw error;
     }
-}
+};
+
 
 /**
  * 

@@ -25,6 +25,7 @@ export const getAll = async (req, res, next) => {
 export const create = async (req, res, next) => {
     const data = {
         ...req.body,
+        email: req.body.email.toLowerCase(),
         group: "User",
         insertAt: new Date()
     }
@@ -63,6 +64,9 @@ export const updateUser = async (req, res, next) => {
     const id = req.params.id;
     const data = {
         ...req.body
+    }
+    if (data.email) {
+        data.email = data.email.toLowerCase();
     }
     try {
         await service.updateUser(id, data);
