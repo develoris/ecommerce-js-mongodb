@@ -1,0 +1,1238 @@
+openapi: 3.0.3
+info:
+  title: User API
+  description: API per la gestione degli utenti, delle categorie e dei carrelli
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+tags:
+  - name: user
+    description: Operazioni relative agli utenti
+  - name: category
+    description: Operazioni relative alle categorie
+  - name: cart
+    description: Operazioni relative ai carrelli
+  - name: product
+    description: Operazioni relative ai prodotti
+
+paths:
+  /user:
+    post:
+      tags:
+        - user
+      summary: Crea un nuovo utente
+      description: Crea un nuovo utente con i dettagli forniti
+      operationId: createUser
+      requestBody:
+        description: Oggetto dell'utente da creare
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+            examples:
+              userExample:
+                summary: Esempio di un nuovo utente
+                value:
+                  name: Loris
+                  surname: Beltramo
+                  dateOfBirth: "1939-09-01"
+                  email: loris.beltramo.dev@gmail.com
+                  password: Loris1-
+      responses:
+        '201':
+          description: Utente creato con successo
+          content:
+            application/json:
+              schema:
+                    example: User registered successfully
+        '400':
+          description: Input non valido
+        '422':
+          description: Eccezione di validazione
+
+    get:
+      tags:
+        - user
+      summary: Ottieni tutti gli utenti
+      description: Ottieni i dettagli di tutti gli utenti autenticati
+      operationId: getAllUsers
+    
+      responses:
+        '200':
+          description: Utenti recuperati con successo
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserProfileResp'
+        '401':
+          description: Autenticazione fallita
+
+  /user/me:
+    get:
+      tags:
+        - user
+      summary: Ottieni i dettagli dell'utente autenticato
+      description: Recupera i dettagli dell'utente autenticato utilizzando il token JWT fornito
+      operationId: getUserDetails
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Dettagli dell'utente recuperati con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileResp'
+        '401':
+          description: Autenticazione fallita
+        '404':
+          description: Utente non trovato
+
+  /user/{idUser}:
+    get:
+      tags:
+        - user
+      summary: Ottieni un utente specifico
+      description: Ottieni i dettagli di un utente specifico autenticato
+      operationId: getUserById
+      parameters:
+        - name: idUser
+          in: path
+          required: true
+          description: ID dell'utente da recuperare
+          schema:
+            type: string
+            example: 66964f999447ccd979b8cb16
+      responses:
+        '200':
+          description: Utente recuperato con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileResp'
+        '401':
+          description: Autenticazione fallita
+        '404':
+          description: Utente non trovato
+
+    put:
+      tags:
+        - user
+      summary: Aggiorna un utente specifico
+      description: Aggiorna i dettagli di un utente specifico autenticato
+      operationId: updateUserById
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: idUser
+          in: path
+          required: true
+          description: ID dell'utente da aggiornare
+          schema:
+            type: string
+            example: 6697c15a70d6b425a127b93e
+      requestBody:
+        description: Dettagli dell'utente da aggiornare
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Carola"
+                surname:
+                  type: string
+                  example: "Giona"
+                dateOfBirth:
+                  type: string
+                  format: date
+                  example: "2003-09-02"
+                email:
+                  type: string
+                  example: "carola.giona@gmail.com"
+      responses:
+        '200':
+          description: Utente aggiornato con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileResp'
+        '400':
+          description: Input non valido
+        '401':
+          description: Autenticazione fallita
+        '404':
+          description: Utente non trovato
+
+  /user/login:
+    post:
+      tags:
+        - user
+      summary: Effettua il login dell'utente
+      description: Effettua il login dell'utente con le credenziali fornite
+      operationId: loginUser
+      requestBody:
+        description: Credenziali dell'utente per il login
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+              required:
+                - email
+                - password
+            examples:
+              loginExample:
+                summary: Esempio di login
+                value:
+                  email: fabrizio.mastrone@gmail.com
+                  password: Miao
+      responses:
+        '200':
+          description: Login avvenuto con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: Credenziali non valide
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Credenziali non valide'
+
+  /user/refresh:
+    post:
+      tags:
+        - user
+      summary: Refresh del token dell'utente
+      description: Refresh del token dell'utente usando il refresh token fornito
+      operationId: refreshUserToken
+      requestBody:
+        description: Refresh token dell'utente
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  type: string
+              required:
+                - refreshToken
+            examples:
+              refreshExample:
+                summary: Esempio di refresh token
+                value:
+                  refreshToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2Njk1M2FjODE2MDc4OTg5ZWQwODk1MDEiLCJlbWFpbCI6Ikl2YW4uVG9ydG9yaWVsbG9AZG5jc3JsLmNvbSIsImZ1bGxOYW1lIjoiSXZhbiBUb3J0b3JpZWxsbyIsImlhdCI6MTcyMTExNTYxMywiZXhwIjoxNzIxOTc5NjEzfQ.GATWfgDRJDZnchcIrGjloNrOaPX7vspixIhJ5C00opQ"
+      responses:
+        '200':
+          description: Refresh avvenuto con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '400':
+          description: Token non valido
+        '422':
+          description: Eccezione di validazione
+
+  /user/logout:
+    delete:
+      tags:
+        - user
+      summary: Esegui il logout dell'utente autenticato
+      description: Logout utente autenticato 
+      operationId: logoutUser
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Logout effettuato con successo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Logout effettuato'
+        '400':
+          description: Input non valido
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: 'Input non valido'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Cannot read properties of null (reading 'token')"
+          
+# SEZIONE CATEGORIA
+  /category:
+    post:
+      tags:
+        - category
+      summary: Crea una nuova categoria
+      description: Crea una nuova categoria con i dettagli forniti
+      operationId: createCategory
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: Oggetto della categoria da creare
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Category'
+            examples:
+              categoryExample:
+                summary: Esempio di nuova categoria
+                value:
+                  category: GPU
+      responses:
+        '201':
+          description: Categoria creata con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '400':
+          description: Input non valido
+
+    get:
+      tags:
+        - category
+      summary: Ottieni tutte le categorie
+      description: Recupera tutte le categorie disponibili
+      operationId: getAllCategories
+      responses:
+        '200':
+          description: Categorie recuperate con successo
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+        '400':
+          description: Errore nella richiesta
+
+  /category/{idCategory}:
+    get:
+      tags:
+        - category
+      summary: Ottieni una categoria specifica
+      description: Recupera i dettagli di una categoria specifica
+      operationId: getCategoryById
+      parameters:
+        - name: idCategory
+          in: path
+          required: true
+          description: ID della categoria da recuperare
+          schema:
+            type: string
+            example: 66a68c90434e8988c91efc7a
+      responses:
+        '200':
+          description: Categoria recuperata con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '404':
+          description: Categoria non trovata
+
+    put:
+      tags:
+        - category
+      summary: Aggiorna una categoria specifica
+      description: Aggiorna i dettagli di una categoria specifica
+      operationId: updateCategoryById
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: idCategory
+          in: path
+          required: true
+          description: ID della categoria da aggiornare
+          schema:
+            type: string
+            example: 669a31721707ddbf9ad4ab05
+      requestBody:
+        description: Dettagli del prodotto da aggiornare
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                category:
+                  type: string
+                  example: "CPU"
+      responses:
+        '200':
+          description: Categoria aggiornata con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '400':
+          description: Input non valido
+        '404':
+          description: Categoria non trovata
+
+    delete:
+      tags:
+        - category
+      summary: Elimina una categoria specifica
+      description: Elimina una categoria specifica
+      operationId: deleteCategoryById
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: idCategory
+          in: path
+          required: true
+          description: ID della categoria da eliminare
+          schema:
+            type: string
+            example: 669a31721707ddbf9ad4ab05
+      responses:
+        '200':
+          description: Categoria eliminata con successo
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+        '404':
+          description: Categoria non trovata
+      
+      
+# SEZIONE CARRELLO
+  /cart:
+    post:
+      tags:
+        - cart
+      summary: Crea un nuovo carrello
+      description: Crea un nuovo carrello per l'utente autenticato
+      operationId: createCart
+      security:
+        - BearerAuth: []
+      responses:
+        '201':
+          description: Carrello creato con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/createCartResponse'
+        '401':
+          description: Autenticazione fallita
+
+    get:
+      tags:
+        - cart
+      summary: Ottieni tutti i carrelli
+      description: Recupera i dettagli di tutti i carrelli dell'utente autenticato
+      operationId: getAllCarts
+      responses:
+        '200':
+          description: Carrelli recuperati con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getAllCartResponse'
+        '401':
+          description: Autenticazione fallita
+
+  /cart/{idCart}:
+    get:
+      tags:
+        - cart
+      summary: Ottieni i dettagli di un carrello specifico
+      description: Recupera i dettagli di un carrello specifico usando l'ID del carrello e il token JWT
+      operationId: getCartById
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: idCart
+          in: path
+          required: true
+          description: ID del carrello da recuperare
+          schema:
+            type: string
+            example: 66a8a9c9e3d060df0e78498c
+      responses:
+        '200':
+          description: Carrello recuperato con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/cart'
+        '401':
+          description: Autenticazione fallita
+        '404':
+          description: Carrello non trovato
+
+    put:
+      tags:
+        - cart
+      summary: Aggiungi un prodotto a un carrello
+      description: Aggiungi un prodotto a un carrello specifico usando l'ID del carrello e l'ID del prodotto
+      operationId: addProductToCart
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: idCart
+          in: path
+          required: true
+          description: ID del carrello al quale aggiungere il prodotto
+          schema:
+            type: string
+            example: 66a8a9c9e3d060df0e78498c
+        - name: idProduct
+          in: query
+          required: true
+          description: ID del prodotto da aggiungere
+          schema:
+            type: string
+            example: 66a37aa9d68f1f7cbb7f335a
+      responses:
+        '200':
+          description: Prodotto aggiunto al carrello con successo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Prodotto aggiunto con successo'
+                  cart:
+                    $ref: '#/components/schemas/cart'
+                required:
+                  - message
+                  - cart
+        '400':
+          description: Input non valido
+          
+        '401':
+          description: Autenticazione fallita
+          
+        '404':
+          description: Carrello o prodotto non trovato
+          
+
+  /cart/me:
+    get:
+      tags:
+        - cart
+      summary: Ottieni i dettagli del carrello dell'utente autenticato
+      description: Recupera i dettagli del carrello dell'utente autenticato
+      operationId: getUserCart
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Carrello dell'utente recuperato con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/cart'
+        '401':
+          description: Autenticazione fallita
+  
+  
+  # SEZIONE PRODOTTI
+  /products:
+    get:
+      tags:
+        - product
+      summary: Ottieni la lista dei prodotti con i filtri
+      description: Recupera una lista di prodotti con parametri di filtro e ordinamento
+      operationId: getAllProducts
+      parameters:
+        - name: page
+          in: query
+          description: Numero della pagina per la paginazione
+          required: true
+          schema:
+            type: integer
+            example: 1
+        - name: limit
+          in: query
+          description: Numero di prodotti per pagina
+          required: true
+          schema:
+            type: integer
+            example: 5
+        - name: sort
+          in: query
+          description: Indica il parametro su cui ordinare
+          required: false
+          schema:
+            type: string
+            example: price
+        - name: order
+          in: query
+          description: Indica il criterio di ordinamento
+          required: false
+          schema:
+            type: string
+            example: ASC
+        - name: minPrice
+          in: query
+          description: Prezzo minimo desiderato
+          required: false
+          schema:
+            type: number
+            example: 10
+        - name: maxPrice
+          in: query
+          description: Prezzo massimo desiderato
+          required: false
+          schema:
+            type: number
+            example: 15
+        - name: name
+          in: query
+          description: Parola o nome del prodotto desiderato
+          required: false
+          schema:
+            type: string
+            example: ram
+      responses:
+        '200':
+          description: Prodotti trovati
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  products:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/getProductsFilterResp'
+                required:
+                  - message
+        '400':
+          description: Input non valido
+        '401':
+          description: Autenticazione fallita
+        '404':
+          description: Prodotti non trovati
+          
+          
+    post:
+      tags:
+        - product
+      summary: Crea un nuovo prodotto
+      description: Aggiunge un nuovo prodotto al catalogo
+      operationId: createProduct
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: Dati del nuovo prodotto
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createProducts'
+            examples:
+              productExample:
+                summary: Esempio di nuovo prodotto
+                value:
+                  name: Prova
+                  category: 66a68c90434e8988c91efc7a
+                  description: Prodotto Prova
+                  qty_stock: 25
+                  price: 79.99
+                  status: active
+                  image:
+                    name: Ram_new.png
+                    type: image/png
+                    data: iVBORw0KGgoAAAANSUhEUgAAAWgAAAFoCAMAAABNO5HnAAAAflBMVEXu7u4YdlAYVTgAi8Mockcod08kfVb///8mdEwoLSghZ0krXTwQQSU0aUkRZz5WYUYlRy0PHhIih2dARziPekr39/lFeFVpclqoklh/gXl4XzzW2dHKsWTq0nabmI/DysJ8qpPo491dSSe0sKgWnNlJlXJnwuCYxLLlv6ys4O+BlVfjAA
+      responses:
+        '201':
+          description: Prodotto creato con successo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Prodotto inserito
+                  getProduct:
+                    $ref: '#/components/schemas/createProductsResp'
+                required:
+                  - message
+                  - getProduct
+        '400':
+          description: Richiesta non valida
+        '500':
+          description: Errore interno del server
+          
+          
+  /products/me:
+    get:
+      tags:
+        - product
+      summary: Recupera i prodotti dell'utente
+      description: Recupera i prodotti messi in vendita dall'utente
+      operationId: getUserProduct
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: prodotti dell'utente recuperato con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getProductMeResp'
+        '401':
+          description: Autenticazione fallita
+          
+          
+  /products/{idProdotto}:
+    get:
+      tags:
+        - product
+      summary: Recupera un prodotta dall'ID
+      description: Recupera i dettagli di un prodotto specifico
+      operationId: getProductsById
+      parameters:
+        - name: idProdotto
+          in: path
+          required: true
+          description: ID del prodotto da recuperare
+          schema:
+            type: string
+            example: 66a7966d393b2005c0963453
+      responses:
+        '200':
+          description: Prodotto recuperato con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/createProductsResp'
+        '404':
+          description: Categoria non trovata
+          
+          
+    put:
+      tags:
+        - product
+      summary: Modifica un prodotto
+      description: Modifica i dettagli di un prodotto specifico
+      operationId: updateProduct
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: idProdotto
+          in: path
+          required: true
+          description: ID del prodotto da aggiornare
+          schema:
+            type: string
+            example: "6494cf7c06318cf46a48970c"
+      requestBody:
+        description: Dettagli del prodotto da aggiornare
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Prova"
+                category:
+                  type: string
+                  example: "66a68c90434e8988c91efc7a"
+                description:
+                  type: string
+                  example: "Prodotto Prova"
+                qty_stock:
+                  type: integer
+                  example: 25
+                price:
+                  type: number
+                  format: float
+                  example: 79.99
+                status:
+                  type: string
+                  example: "active"
+                image:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      example: "Ram_new.png"
+                    type:
+                      type: string
+                      example: "image/png"
+                    data:
+                      type: string
+                      example: "iVBORw0KGgoAAAANSUhEUgAAAWgAAAFoCAMAAABNO5HnAAAAflBMVEXu7u4YdlAYVTgAi8Mockcod08kfVb///8mdEwoLSghZ0krXTwQQSU0aUkRZz5WYUYlRy0PHhIih2dARziPekr39/lFeFVpclqoklh/gXl4XzzW2dHKsWTq0nabmI/DysJ8qpPo491dSSe0sKgWnNlJlXJnwuCYxLLlv6ys4O+BlVfjAA"
+              required:
+                - name
+                - category
+                - description
+                - qty_stock
+                - price
+                - status
+      responses:
+        '200':
+          description: Prodotto aggiornato con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/createProductsResp'
+        '400':
+          description: Input non valido
+        '404':
+          description: Prodotto non trovato
+          
+          
+    delete:
+      tags:
+        - product
+      summary: Elimina un prodotto
+      description: Elimina un prodotto specifico tramite il suo ID
+      operationId: deleteProduct
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: idProdotto
+          in: path
+          required: true
+          description: ID del prodotto da eliminare
+          schema:
+            type: string
+            example: "6494cf7c06318cf46a48970c"
+      responses:
+        '200':
+          description: Prodotto eliminato con successo
+        '400':
+          description: Input non valido
+        '404':
+          description: Prodotto non trovato
+        '401':
+          description: Autenticazione fallita
+        '403':
+          description: Permesso negato
+          
+          
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      
+      
+  schemas:
+    User:
+      type: object
+      properties:
+        name:
+          type: string
+        surname:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+      required:
+        - name
+        - surname
+        - dateOfBirth
+        - email
+        - password
+        
+        
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        surname:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        email:
+          type: string
+      required:
+        - id
+        - name
+        - surname
+        - dateOfBirth
+        - email
+        
+        
+    UserProfile:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        surname:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        email:
+          type: string
+      required:
+        - id
+        - name
+        - surname
+        - dateOfBirth
+        - email
+        
+        
+    UserProfileResp:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        surname:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        email:
+          type: string
+        password:
+          type: string
+        group: 
+          type: string
+        insertAt:
+          type: string
+          format: date-time
+        
+        
+    # LoginRequest:
+    #   type: object
+    #   properties:
+    #     email:
+    #       type: string
+    #       format: email
+    #     password:
+    #       type: string
+    #   required:
+    #     - email
+    #     - password
+        
+        
+    LoginResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        expiresIn: 
+          type: number
+        type:
+          type: string
+      
+        
+        
+    # RefreshTokenRequest:
+    #   type: object
+    #   properties:
+    #     refreshToken:
+    #       type: string
+    #   required:
+    #     - refreshToken
+        
+        
+    TokenResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+
+        
+        
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+        category:
+          type: string
+      required:
+        - id
+        - category
+        
+        
+    cart:
+      type: object
+      properties:
+        _id:
+          type: string
+        idUtente:
+          type: string
+        status:
+          type: string
+        dataCreation:
+          type: string
+          format: date-time
+        qty:
+          type: integer
+        totPrice:
+          type: number
+          format: float
+        products:
+          type: array
+          items:
+            type: string
+        productDetails:
+          type: array
+          items:
+            $ref: '#/components/schemas/getProductMeResp'
+        
+        
+    createCartResponse:
+      type: object
+      properties: 
+        _id: 
+          type: string
+        idUtente:
+          type: string
+        status:
+          type: string 
+        dataCreation: 
+          type: string
+          format: date-time
+        qty: 
+          type: number
+          format: integer
+        totPrice:
+          type: number
+          format: float
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/getProductMeResp'
+        
+        
+    getAllCartResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/createCartResponse'
+        
+        
+    getProductsFilterResp:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        category:
+          type: object
+          properties:
+            _id:
+              type: string
+            category:
+              type: string
+        description:
+          type: string
+        qty_stock:
+          type: integer
+        price:
+          type: number
+          format: float
+        status:
+          type: string
+        image:
+          type: object
+          properties:
+            name:
+              type: string
+            type:
+              type: string
+            data:
+              type: string
+              
+              
+    getProductsFilter:
+      type: object
+      properties:
+        page:
+          type: integer
+        limit:
+          type: integer
+        sort:
+          type: string
+        order:
+          type: string
+        minPrice:
+          type: number
+          format: float
+        maxPrice:
+          type: number
+          format: float
+        name:
+          type: string
+      required:
+        - page
+        - limit
+        
+        
+    createProducts:
+      type: object
+      properties:
+        name:
+          type: string
+        category:
+          type: string
+        description:
+          type: string
+        qty_stock:
+          type: integer
+        price:
+          type: number
+          format: float
+        status:
+          type: string
+        image:
+          type: object
+          properties:
+            name:
+              type: string
+            type:
+              type: string
+            data:
+              type: string
+          required:
+            - name
+            - type
+            - data
+      required:
+        - name
+        - category
+        - description
+        - qty_stock
+        - price
+        - status
+        - image
+        
+        
+    getProductMeResp:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        category:
+          type: string
+        description:
+          type: string
+        qty_stock:
+          type: integer
+        price:
+          type: number
+          format: float
+        status:
+          type: string
+        image:
+          type: object
+          properties:
+            name:
+              type: string
+            type:
+              type: string
+            data:
+              type: string
+        userId:
+          type: string
+          
+          
+    createProductsResp:
+      type: object
+      properties:
+        name:
+          type: string
+        category:
+          type: object
+          properties: 
+            _id:
+              type: string
+            category:
+              type: string
+        description:
+          type: string
+        qty_stock:
+          type: integer
+        price:
+          type: number
+          format: float
+        status:
+          type: string
+        image:
+          type: object
+          properties:
+            name:
+              type: string
+            type:
+              type: string
+            data:
+              type: string
+        user:
+          type: object
+          properties:
+            _id:
+              type: string
+            name:
+              type: string
+            surname: 
+              type: string
+            fullname: 
+              type: string
+            email: 
+              type: string
