@@ -79,12 +79,20 @@ export const create = async (req, res, next) => {
  */
 export const update = async (req, res, next) => {
     const id = req.params.id;
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    if (!token) {
+        return res.status(401).json({ message: 'Authorization token is missing' });
+    }
+        
     const data = {
         ...req.body,
         price: parseFloat(req.body.price)
     };
     try {
-        await service.updateById(data, id)
+        const decoded = jwt.verify(token, process.env.SECRET_KEY);
+        const idUserToken = decoded.userId;
+        await service.updateById(data, id, idUserToken)
         const getProduct = await service.getProductById(id);
         return res.send({ message: 'Aggiornamento completato', product: getProduct });
     } catch (error) {
