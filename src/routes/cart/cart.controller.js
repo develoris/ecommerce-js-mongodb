@@ -13,7 +13,7 @@ export const createCart = async (req, res, next) => {
     const token = authHeader.split(' ')[1];
     try {
         const decoded = jwt.verify(token, process.env.SECRET_KEY);
-        const idUser = "" + decoded.userId; 
+        const idUser = "" + decoded.userId;
         const userId = new ObjectId(idUser);
 
         const newCart = await service.createCart(userId);
@@ -34,13 +34,13 @@ export const addProductToCart = async (req, res, next) => {
     const cartId = req.params.idCart;
     const productId = req.params.idProduct;
 
-      try {
+    try {
         await service.addProductToCart(cartId, productId);
         const getCart = await service.getCartByIdWithDetails(cartId);
         return res.send({ message: 'Prodotto aggiunto al carrello', cart: getCart });
     } catch (error) {
         next(error);
-}
+    }
 }
 
 /**

@@ -71,7 +71,7 @@ export const updateUser = async (req, res, next) => {
     try {
         await service.updateUser(id, data);
         const getUserUpdated = await service.getUserById(id)
-        return res.send (getUserUpdated);
+        return res.send(getUserUpdated);
     } catch (error) {
         next(error)
     }
@@ -100,8 +100,8 @@ export const deleteUser = async (req, res, next) => {
  * @param {*} next 
  * @returns 
  */
-export const loginUser = async (req,res,next) => {
-    const { email, password }= req.body;
+export const loginUser = async (req, res, next) => {
+    const { email, password } = req.body;
     try {
         const token = await service.login(email, password);
         return res.send(token)
@@ -128,7 +128,7 @@ export const getMe = async (req, res, next) => {
         const decoded = jwt.verify(token, process.env.SECRET_KEY);
         const idUser = decoded.userId;
         const user = await service.getMe(idUser);
-        
+
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
@@ -152,7 +152,7 @@ export const refreshToken = async (req, res, next) => {
     }
     try {
         const newAccessToken = await service.refreshToken(refreshToken);
-        return res.send({accessToken: newAccessToken});
+        return res.send({ accessToken: newAccessToken });
     } catch (error) {
         next(error);
     }
@@ -168,7 +168,7 @@ export const deleteToken = async (req, res, next) => {
     const idUser = req.user.userId;
     try {
         await service.logoutUser(idUser);
-        return res.send({message: 'Logout effettuato'});
+        return res.send({ message: 'Logout effettuato' });
     } catch (error) {
         next(error)
     }
