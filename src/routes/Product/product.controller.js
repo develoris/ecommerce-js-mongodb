@@ -54,12 +54,12 @@ export const create = async (req, res, next) => {
         return res.status(401).json({ message: 'Authorization token is missing' });
     }
 
-        const decoded = jwt.verify(token, process.env.SECRET_KEY);
-        const idUser = decoded.userId;
+    const decoded = jwt.verify(token, process.env.SECRET_KEY);
+    const idUser = decoded.userId;
 
     const data = {
         ...req.body,
-        userId: idUser, 
+        userId: idUser,
         price: parseFloat(req.body.price)
     }
     try {
@@ -84,7 +84,7 @@ export const update = async (req, res, next) => {
     if (!token) {
         return res.status(401).json({ message: 'Authorization token is missing' });
     }
-        
+
     const data = {
         ...req.body,
         price: parseFloat(req.body.price)
@@ -133,7 +133,7 @@ export const productMe = async (req, res, next) => {
         const decoded = jwt.verify(token, process.env.SECRET_KEY);
         const idUser = decoded.userId;
         const productMe = await service.getProductByUserId(idUser);
-        return res.json( productMe );
+        return res.json(productMe);
     } catch (error) {
         next(error);
     }
