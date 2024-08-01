@@ -16,9 +16,9 @@ export const createUser = async (bodyObj) => {
             password: hashPassword
         };
         const emailExist = await getCollection('User').findOne({ email: bodyObj.email })
-         if (emailExist) {
-             throw new Error (`This user already exist`)
-         }
+        if (emailExist) {
+            throw new Error(`This user already exist`)
+        }
         const newUser = await getCollection('User').insertOne(data);
         return newUser;
     } catch (error) {
@@ -66,7 +66,7 @@ export const updateUser = async (id, dataObj) => {
         //const hashPassword = await bcrypt.hash(dataObj.password, 10);
         const data = {
             ...dataObj,
-           // password: hashPassword
+            // password: hashPassword
         };
         const updateUser = await getCollection('User').updateOne({ _id }, { $set: data });
         return updateUser;
@@ -112,15 +112,15 @@ export const login = async (email, password) => {
         const expInSecTok = +process.env.TOKEN_TIME_SECOND;
         const expInSecRefTok = +process.env.REFRESH_TOKEN_TIME_SECOND;
 
-        const tokenExist = await getCollection('Token').findOne({  userId: user._id });
+        const tokenExist = await getCollection('Token').findOne({ userId: user._id });
         if (tokenExist) {
-            await getCollection('Token').deleteOne({  userId: user._id });
-        } 
+            await getCollection('Token').deleteOne({ userId: user._id });
+        }
 
         const token = jwt.sign(tokenPayload, process.env.SECRET_KEY, {
             expiresIn: expInSecTok
         })
-        const refreshToken = jwt.sign({ userId: user._id, email: user.email, fullName: `${user.name} ${user.surname}` }, process.env.SECRET_KEY, { 
+        const refreshToken = jwt.sign({ userId: user._id, email: user.email, fullName: `${user.name} ${user.surname}` }, process.env.SECRET_KEY, {
             expiresIn: expInSecRefTok
         });
 
@@ -144,9 +144,9 @@ export const login = async (email, password) => {
  */
 export const getMe = async (id) => {
     try {
-        const _id = new ObjectId (id)
+        const _id = new ObjectId(id)
 
-        const userMe = await getCollection('User').findOne({_id})
+        const userMe = await getCollection('User').findOne({ _id })
         return userMe;
     } catch (error) {
         throw error;
@@ -162,11 +162,11 @@ export const refreshToken = async (refreshTk) => {
     try {
         const decoded = jwt.verify(refreshTk, process.env.SECRET_KEY);
         const tokenPayload = { userId: decoded.userId, email: decoded.email, fullName: decoded.fullName };
-        const accessToken = jwt.sign(tokenPayload, process.env.SECRET_KEY, { 
+        const accessToken = jwt.sign(tokenPayload, process.env.SECRET_KEY, {
             expiresIn: process.env.TOKEN_TIME_SECOND
         });
-        const userId = new ObjectId ('' + decoded.userId)
-        await getCollection('Token').updateOne({userId}, {$set: {token: accessToken}})
+        const userId = new ObjectId('' + decoded.userId)
+        await getCollection('Token').updateOne({ userId }, { $set: { token: accessToken } })
         return accessToken;
     } catch (error) {
         throw new Error('Invalid refresh token');
@@ -180,8 +180,8 @@ export const refreshToken = async (refreshTk) => {
  */
 export const logoutUser = async (id_user) => {
     try {
-        const _id = new ObjectId (id_user)
-        const result = await getCollection('Token').deleteOne({userId: _id});
+        const _id = new ObjectId(id_user)
+        const result = await getCollection('Token').deleteOne({ userId: _id });
         if (result.deletedCount >= 1) {
             return true;
         } else {

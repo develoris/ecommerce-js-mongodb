@@ -51,7 +51,7 @@ export const lookup_productById = (_id) => [
                 _id: { $arrayElemAt: ['$userDetails._id', 0] },
                 name: { $arrayElemAt: ['$userDetails.name', 0] },
                 surname: { $arrayElemAt: ['$userDetails.surname', 0] },
-                fullname: { 
+                fullname: {
                     $concat: [
                         { $arrayElemAt: ['$userDetails.name', 0] },
                         ' ',
@@ -81,7 +81,7 @@ export const lookup_productById = (_id) => [
 export const lookup_productByUserId = (_id) => [
     {
         $match: { userId: _id } // Filtra per l'ID specifico
-    }, 
+    },
     {
         $lookup: {
             from: 'Category',

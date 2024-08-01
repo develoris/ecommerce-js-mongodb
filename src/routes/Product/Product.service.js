@@ -9,11 +9,11 @@ import { lookup_product, lookup_productById, lookup_productByUserId } from './pr
  */
 export const getProduct = async (queryParams) => {
     try {
-        const { page, limit , sort = 'name', order = 'asc', minPrice, maxPrice, ...fieldsFilter} = queryParams;
+        const { page, limit, sort = 'name', order = 'asc', minPrice, maxPrice, ...fieldsFilter } = queryParams;
 
         const skip = (page - 1) * limit;
-        
-        const filter = {...fieldsFilter};
+
+        const filter = { ...fieldsFilter };
         if (minPrice) filter.price = { ...filter.price, $gte: parseFloat(minPrice) };
         if (maxPrice) filter.price = { ...filter.price, $lte: parseFloat(maxPrice) };
 
@@ -29,7 +29,7 @@ export const getProduct = async (queryParams) => {
                 filter[key] = value;
             }
         }
-        
+
         const pipeline = [
             { $match: filter },
             ...lookup_product,
@@ -48,10 +48,10 @@ export const getProduct = async (queryParams) => {
 
         // Costruisce i percorsi per i link
         const buildPath = (page) => `/products?sort=${sort}&order=${order}&limit=${limit}&page=${page}`;
-        
+
         return {
             pages: totalPages,
-            products: products.map(p => {delete p.userId; return p}),
+            products: products.map(p => { delete p.userId; return p }),
             first: buildPath(1),
             previous: page > 1 ? buildPath(page - 1) : null,
             next: page < totalPages ? buildPath(page + 1) : null
@@ -165,7 +165,7 @@ export const deleteOne = async (id) => {
 export const getProductByUserId = async (userId) => {
     try {
         const _id = new ObjectId(userId);
-        
+
         const products = await getCollection('Product').aggregate(lookup_productByUserId(_id)).toArray();
         return products;
     } catch (error) {
