@@ -41,6 +41,7 @@
 // };
 
 // startServer();
+console.log('test')
 import express from 'express';
 import errorHandler from './middleware/errorHandler.js';
 import productRouter from './routes/Product/Product.routes.js';
@@ -54,7 +55,7 @@ import getSwaggerDocument from './routes/swaggerDoc/swagger.routes.js';
 
 
 const server = express();
-server.use(express.json());
+server.use(express.json({limit: '200mb'}));
 
 const corsOption = {
     origin: '*'
