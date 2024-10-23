@@ -83,9 +83,12 @@ const PORT = +(process.env.PORT || 3000);
 const startServer = async () => {
     try {
         await connectDB();
-        server.listen(PORT, () => {
-            console.log(`Server listening at http://localhost:${PORT}`);
-        });
+        // server.listen(PORT, () => {
+        //     console.log(`Server listening at http://localhost:${PORT}`);
+        // });
+        module.exports = (req, res) => {
+            app(req, res); // Integrazione con Vercel
+          };
     } catch (error) {
         console.error('Failed to start server:', error);
     }
